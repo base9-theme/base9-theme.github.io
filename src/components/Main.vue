@@ -1,9 +1,13 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import YAML from 'yaml'
+import tmp from '../assets/tmp.yaml?raw';
+const schemes = import.meta.globEager("../assets/schemes/*.yaml")
+// import tmp from '..assets'
+import yaml from 'js-yaml'
 import Color from 'color'
 import _ from 'lodash'
 const N = 16;
+console.log(tmp);
 
 
 const testColors = [
@@ -119,7 +123,7 @@ export default defineComponent({
       }
     },
     importYaml() {
-      const obj = YAML.parse(this.yamlText);
+      const obj = yaml.load(this.yamlText) as any;
       if(!_.isObjectLike(obj)) {
         return;
       }
@@ -127,7 +131,7 @@ export default defineComponent({
         this.scheme=obj.scheme;
       }
       if(_.isString(obj.author)) {
-        this.author = obj.scheme
+        this.author = obj.author
       }
       for(let i=0;i<24;i++) {
         const value = obj[base24Digits[i]];
@@ -143,12 +147,12 @@ export default defineComponent({
       }
     },
     exportYaml() {
-      const yaml = Object.fromEntries([
+      const yamlObj = Object.fromEntries([
         ['scheme', this.scheme],
         ['author', this.author],
         ..._.times(24, i => [base24Digits[i], this.colors[i].hex()]),
       ])
-      this.yamlText = YAML.stringify(yaml);
+      this.yamlText = yaml.dump(yamlObj);
     },
     changeColorText(i: number, e: Event) {
       try {
@@ -190,8 +194,8 @@ export default defineComponent({
   <span> selected: {{ selected }} </span>
   <button v-on:click="mixForground(0.3)">mix</button> 
 
-  <button v-on:click="importYaml()">import</button> 
-  <button v-on:click="exportYaml()">export</button> 
+  <button v-on:click="importYaml">import</button> 
+  <button v-on:click="exportYaml">export</button> 
   <textarea v-model="yamlText" placeholder="add multiple lines"></textarea>
 </div>
 </template>
