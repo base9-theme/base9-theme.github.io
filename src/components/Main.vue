@@ -1,14 +1,19 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import tmp from '../assets/tmp.yaml?raw';
-const schemes = import.meta.globEager("../assets/schemes/*.yaml")
 // import tmp from '..assets'
 import yaml from 'js-yaml'
 import Color from 'color'
 import _ from 'lodash'
-const N = 16;
-console.log(tmp);
 
+const N=24;
+
+const schemesRaw = import.meta.globEager("../assets/schemes/*.yaml")
+
+const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k,v]) => ([
+  ((/\.\.\/assets\/schemes\/(.*)\.yaml/.exec(k)||[])[1]),
+  v.default,
+])));
+console.log(schemeObjs);
 
 const testColors = [
   Color("#131313"),
@@ -70,7 +75,7 @@ function getVar(i: number) {
   return `var(--base24-${i})`;
 }
 
-const cellStyles = _.times(24, i => ({
+const cellStyles = _.times(N, i => ({
   "background-color": getVar(i),
   color: getVar(contrastIndex[i]),
 }));
@@ -84,11 +89,9 @@ type Base24Object = {
 
 export default defineComponent({
   data(vm) {
-    const colors: Color[] = [];
-    for(let i=0;i<24;i++) {
-      colors[i] = Color("#000000")
-    }
+    const colors: Color[] = _.times(N, () => Color("#000000"))
 
+    console.log(schemeObjs);
     return {
       yamlText: "",
       scheme: "Default",
@@ -96,12 +99,16 @@ export default defineComponent({
       selected: 0,
       cellStyles,
       colors: testColors,
+      // tmp: {a:1,b:2},
+      schemeObjs,
     }
   },
   created() {
     return {
       Color,
       cellStyles,
+      // schemeObjs,
+      // tmp: {a:1,b:2},
     };
   },
   computed: {
@@ -133,7 +140,7 @@ export default defineComponent({
       if(_.isString(obj.author)) {
         this.author = obj.author
       }
-      for(let i=0;i<24;i++) {
+      for(let i=0;i<N;i++) {
         const value = obj[base24Digits[i]];
         if(!_.isString(value)) {
           continue;
@@ -150,9 +157,31 @@ export default defineComponent({
       const yamlObj = Object.fromEntries([
         ['scheme', this.scheme],
         ['author', this.author],
-        ..._.times(24, i => [base24Digits[i], this.colors[i].hex()]),
+        ..._.times(N, i => [base24Digits[i], this.colors[i].hex()]),
       ])
       this.yamlText = yaml.dump(yamlObj);
+    },
+    setScheme(schemeObj: Base24Object) {
+      this.scheme = schemeObj.scheme
+      this.author = schemeObj.author
+      for(let i=0;i<16;i++) {
+        let colorStr = schemeObj[base24Digits[i]];
+        if(colorStr[0] != "#") {
+          colorStr = "#" + colorStr;
+        }
+        this.colors[i]=Color(colorStr);
+      }
+      for(let i=16;i<24;i++) {
+        let colorStr = schemeObj[base24Digits[i]];
+        if(colorStr === undefined) {
+          this.colors[i]=Color(this.colors[i-8]);
+        } else {
+          if(colorStr[0] != "#") {
+            colorStr = "#" + colorStr;
+          }
+          this.colors[i]=Color(colorStr);
+        }
+      }
     },
     changeColorText(i: number, e: Event) {
       try {
@@ -169,17 +198,24 @@ export default defineComponent({
 <template>
 <div v-bind:style="cssVariable">
   <h1>{{ scheme }}</h1>
-  <div class="color-list" >
-    <span
-      class="color-cell"
-      v-on:click="selected = i"
-      :style="cellStyles[i]"
-      v-for="(color, i) in colors"
-      v-bind:key="i"
-    >
-      {{ color.hex().toString() }}
-    </span>
+  <h3>{{ author }}</h3>
+  <div class="scheme-list">
+    <button
+      v-for="(schemeObj, key) in schemeObjs"
+      v-bind:key="key"
+      v-on:click="setScheme(schemeObj)"
+      class="scheme-cell"
+    > {{ schemeObj.scheme }} </button>
+    <!-- <span
+      v-for="(schemeObj, key) in schemeObjs"
+      v-bind:key="key"
+      v-on:click="setScheme(schemeObj)"
+      class="scheme-cell"
+    > {{ scheme.scheme }} </span> -->
   </div>
+
+
+
   <div class="color-list" >
     <input
       class="color-cell"
@@ -209,7 +245,12 @@ export default defineComponent({
 
 .color-cell {
   border: 0;
+  padding: 10px;
   min-width: 0;
+  text-align: center;
+}
+.color-cell:focus {
+  outline: none;
 }
 
 a {
