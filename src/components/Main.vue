@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import YAML from 'yaml'
 import Color from 'color'
 import _ from 'lodash'
@@ -78,7 +78,7 @@ type Base24Object = {
   [key: string]: string,
 }
 
-export default {
+export default defineComponent({
   data(vm) {
     const colors: Color[] = [];
     for(let i=0;i<24;i++) {
@@ -133,10 +133,10 @@ export default {
         const value = obj[base24Digits[i]];
         if(!_.isString(value)) {
           continue;
-        } else if(/[0-9a-fA-F]{6}/.test(value)) {
+        } else if(/^[0-9a-fA-F]{6}$/.test(value)) {
           this.colors[i] = Color("#"+value);
           // rtnEntries.push(Color("#"+value));
-        } else if(/#[0-9a-fA-F]{6}/.test(value)) {
+        } else if(/^#[0-9a-fA-F]{6}$/.test(value)) {
           this.colors[i] = Color(value);
         } else {
         }
@@ -150,15 +150,16 @@ export default {
       ])
       this.yamlText = YAML.stringify(yaml);
     },
-    changeColorText(i: number, e: InputEvent) {
+    changeColorText(i: number, e: Event) {
       try {
-        this.colors[i] = Color(e.currentTarget?.value)
+        const element = e.currentTarget as HTMLInputElement;
+        this.colors[i] = Color(element.value);
       } catch (e) {
         this.colors[i] = this.colors[i];
       }
     },
   }
-}
+});
 
 </script>
 <template>
@@ -189,7 +190,6 @@ export default {
   <span> selected: {{ selected }} </span>
   <button v-on:click="mixForground(0.3)">mix</button> 
 
-  <button v-on:click="setColor(16, Color('#123456'))">test</button> 
   <button v-on:click="importYaml()">import</button> 
   <button v-on:click="exportYaml()">export</button> 
   <textarea v-model="yamlText" placeholder="add multiple lines"></textarea>

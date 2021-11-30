@@ -4,7 +4,7 @@ import { ref } from 'vue'
 </script>
 
 <template>
-  <div>{{ color }}</div>
+  <div>{{ 1 }}</div>
 </template>
 
 <style scoped>
