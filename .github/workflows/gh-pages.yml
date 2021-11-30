@@ -34,4 +34,3 @@ jobs:
         build_dir: dist/
         # Allow Jekyll to build your site
         jekyll: false
-        dry_run: true
