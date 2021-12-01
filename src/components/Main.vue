@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+
 // import tmp from '..assets'
 import yaml from 'js-yaml'
 import Color from 'color'
@@ -8,12 +9,24 @@ import _ from 'lodash'
 const N=24;
 
 const schemesRaw = import.meta.globEager("../assets/schemes/*.yaml")
+import terminalrcRaw from "../assets/templates/terminalrc.mustache?raw";
+import base24Raw from "../assets/templates/base24.mustache?raw";
+import Mustache from 'mustache';
+// import tmp from '../assets/templates/tmp.mustache?raw';
+// const tmp = import.meta.globEager('../assets/templates/*.mustache');
+// console.log(tmp);
+
+
 
 const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k,v]) => ([
   ((/\.\.\/assets\/schemes\/(.*)\.yaml/.exec(k)||[])[1]),
   v.default,
 ])));
 console.log(schemeObjs);
+const templateObjs: {[name: string]: string} = {
+  terminalrc: terminalrcRaw,
+  base24: base24Raw,
+}
 
 const testColors = [
   Color("#131313"),
@@ -80,6 +93,44 @@ const cellStyles = _.times(N, i => ({
   color: getVar(contrastIndex[i]),
 }));
 
+/**
+ * Converts integer between 0 and 255 to two digit hex.
+ */
+function toHex2(n: number): string {
+  const rtn = n.toString(16);
+  if(rtn.length === 1) {
+    return "0"+rtn;
+  }
+  return rtn;
+}
+function getTemplateVariable(obj: Base24Class, slug: string) {
+  const colors = obj.colors;
+  return Object.fromEntries([
+    ['scheme-name', obj.scheme],
+    ['scheme-author', obj.author],
+    ['scheme-slug', slug],
+    ..._.flatMap(colors, (c, i) => [
+      [base24Digits[i]+'-hex', c.hex().slice(1)], // i.e. 7cafc2
+      [base24Digits[i]+'-hex-bgr', c.hex().slice(1)], // i.e. c2af7c
+      [base24Digits[i]+'-hex-r', toHex2(c.red())],  // i.e. c2
+      [base24Digits[i]+'-hex-g', toHex2(c.green())], // i.e. af
+      [base24Digits[i]+'-hex-b', toHex2(c.blue())], // i.e. 7c
+      [base24Digits[i]+'-rgb-r', c.red().toString()], // i.e. 192
+      [base24Digits[i]+'-rgb-g', c.green().toString()], // i.e. 175
+      [base24Digits[i]+'-rgb-b', c.blue().toString()], // i.e. 124
+      [base24Digits[i]+'-dec-r', (c.red()/255).toString()], // i.e. 0.75...
+      [base24Digits[i]+'-dec-g', (c.green()/255).toString()], // i.e. 0.68...
+      [base24Digits[i]+'-dec-b', (c.blue()/255).toString()], // i.e. 0.48...
+    ]),
+  ]);
+}
+
+type Base24Class = {
+  scheme: string,
+  author: string,
+  colors: Color[],
+}
+
 type Base24Colors = Color[];
 type Base24Object = {
   scheme: string,
@@ -93,14 +144,16 @@ export default defineComponent({
 
     console.log(schemeObjs);
     return {
-      yamlText: "",
+      importExportText: "",
       scheme: "Default",
       author: "Forrest Li",
-      selected: 0,
-      cellStyles,
+      selectedColorIndex: 0,
+      selectedTemplate: "base24",
       colors: testColors,
       // tmp: {a:1,b:2},
+      cellStyles,
       schemeObjs,
+      templateObjs,
     }
   },
   created() {
@@ -120,6 +173,9 @@ export default defineComponent({
     msg: String,
   },
   methods: {
+    log(x: any) {
+      console.log(x);
+    },
     setColor(i: number, c: Color) {
       this.colors[i] = c;
       console.log(this.colors);
@@ -130,7 +186,7 @@ export default defineComponent({
       }
     },
     importYaml() {
-      const obj = yaml.load(this.yamlText) as any;
+      const obj = yaml.load(this.importExportText) as any;
       if(!_.isObjectLike(obj)) {
         return;
       }
@@ -154,12 +210,21 @@ export default defineComponent({
       }
     },
     exportYaml() {
-      const yamlObj = Object.fromEntries([
-        ['scheme', this.scheme],
-        ['author', this.author],
-        ..._.times(N, i => [base24Digits[i], this.colors[i].hex()]),
-      ])
-      this.yamlText = yaml.dump(yamlObj);
+      const template = templateObjs[this.selectedTemplate]
+      const view = getTemplateVariable({
+        scheme: this.scheme,
+        author: this.author,
+        colors: this.colors,
+      }, "base24-custom")
+      const output = Mustache.render(template, view)
+      this.importExportText = output;
+
+      // const yamlObj = Object.fromEntries([
+      //   ['scheme', this.scheme],
+      //   ['author', this.author],
+      //   ..._.times(N, i => [base24Digits[i], this.colors[i].hex()]),
+      // ])
+      // this.importExportText = yaml.dump(yamlObj);
     },
     setScheme(schemeObj: Base24Object) {
       this.scheme = schemeObj.scheme
@@ -206,12 +271,6 @@ export default defineComponent({
       v-on:click="setScheme(schemeObj)"
       class="scheme-cell"
     > {{ schemeObj.scheme }} </button>
-    <!-- <span
-      v-for="(schemeObj, key) in schemeObjs"
-      v-bind:key="key"
-      v-on:click="setScheme(schemeObj)"
-      class="scheme-cell"
-    > {{ scheme.scheme }} </span> -->
   </div>
 
 
@@ -219,7 +278,7 @@ export default defineComponent({
   <div class="color-list" >
     <input
       class="color-cell"
-      v-on:click="selected = i"
+      v-on:click="selectedColorIndex = i"
       :style="cellStyles[i]"
       v-for="(color, i) in colors"
       v-bind:key="i"
@@ -227,12 +286,21 @@ export default defineComponent({
       v-on:change="changeColorText(i, $event)"
     />
   </div>
-  <span> selected: {{ selected }} </span>
+  <span> selected: {{ selectedColorIndex }} </span>
   <button v-on:click="mixForground(0.3)">mix</button> 
 
   <button v-on:click="importYaml">import</button> 
   <button v-on:click="exportYaml">export</button> 
-  <textarea v-model="yamlText" placeholder="add multiple lines"></textarea>
+  <select v-on:change="selectedTemplate = $event.currentTarget.value">
+    <option
+      class="template-cell"
+      v-on:click="selected = i"
+      v-for="(template, name) in templateObjs"
+      v-bind:key="name"
+      :value="name"
+    >{{name}}</option>
+  </select>
+  <textarea v-model="importExportText" placeholder="add multiple lines"></textarea>
 </div>
 </template>
 
