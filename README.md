@@ -1,11 +1,43 @@
-# Vue 3 + Typescript + Vite
+# Base24
 
-This template should help get you started developing with Vue 3 and Typescript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+An architecture for building themes based on carefully chosen syntax highlighting using a base of 24 colors.
 
-## Recommended IDE Setup
+## Why Base24
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+Base16 is an awesome tool. But it has a few short commings that inspired me to address:
 
-## Type Support For `.vue` Imports in TS
+### ANSI Color
+ANSI 4-bit color is a standard used in terminals that specify 16 colors to be used by programs in terminals.
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
+However
+Base16 does not have enough colors to specify all 16 ANSI colors.
+
+
+
+
+
+## Get Started
+
+## List of Templates
+
+## Improvements addition to base16
+<!-- 1. Lets you specify lighter version colors. -->
+1. Better ANSI color support.
+a. Support specifying all ANSI 4 bit color
+a. Does not override ANSI 256 color palette
+a. Enable compatibility mode for programs that only support 256 colors
+2. Help you design the scheme based on color science
+Does not have hundreds of schemes pre-installed
+Support all base16 schemes and templates.
+Better looking
+
+
+
+## Credit
+
+[Base16](https://github.com/chriskempson/base16)
+
+
+
+
+

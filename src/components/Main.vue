@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, VueElement } from 'vue'
 
 // import tmp from '..assets'
 import yaml from 'js-yaml'
@@ -173,9 +173,6 @@ export default defineComponent({
     msg: String,
   },
   methods: {
-    log(x: any) {
-      console.log(x);
-    },
     setColor(i: number, c: Color) {
       this.colors[i] = c;
       console.log(this.colors);
@@ -291,12 +288,13 @@ export default defineComponent({
 
   <button v-on:click="importYaml">import</button> 
   <button v-on:click="exportYaml">export</button> 
-  <select v-on:change="selectedTemplate = $event.currentTarget.value">
+  <!-- <select v-on:change="selectedTemplate = $event.currentTarget.value"> -->
+  <select v-model="selectedTemplate">
     <option
       class="template-cell"
-      v-on:click="selected = i"
       v-for="(template, name) in templateObjs"
       v-bind:key="name"
+      default
       :value="name"
     >{{name}}</option>
   </select>
