@@ -1,4 +1,5 @@
 <script lang="ts">
+import Slider from '@vueform/slider';
 import { defineComponent, ref, VueElement } from 'vue'
 
 // import tmp from '..assets'
@@ -43,30 +44,15 @@ const base24Digits = [
   'base17',
 ]
 
-const N = 10;
+const N = 12;
 const sampleColors2 = {
-  dracula: "https://coolors.co/000000-282A36-F8F8F2-FFFFFF-FF5555-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
-  default: "https://coolors.co/000000-181818-D8D8D8-FFFFFF-AB4642-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
-  solarized: "https://coolors.co/000000-002b36-93a1a1-fdf6e3-dc322f-b58900-859900-2aa198-6c71c4-d33682",
-// " blue      #268bd2  4/4 blue      33 #0087ff 55 -10 -45  38 139 210 205  82  82
-// " orange    #cb4b16  9/3 brred    166 #d75f00 50  50  55 203  75  22  18  89  80
+  dracula: "https://coolors.co/000000-282A36-F8F8F2-FFFFFF-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-A4BEFB-BD93F9-FF79C6",
+  default: "https://coolors.co/000000-181818-D8D8D8-FFFFFF-AB4642-DC9656-F7CA88-A1B56C-86C1B9-81B8BE-7CAFC2-BA8BAF",
+  solarized: "https://coolors.co/000000-002b36-93a1a1-fdf6e3-dc322f-CB4B16-b58900-859900-2aa198-268BD2-6c71c4-d33682",
 }
-// " blue      #268bd2  4/4 blue      33 #0087ff 55 -10 -45  38 139 210 205  82  82
-// " orange    #cb4b16  9/3 brred    166 #d75f00 50  50  55 203  75  22  18  89  80
-
-// base03    #002b36  8/4 brblack  234 #1c1c1c 15 -12 -12   0  43  54 193 100  21
-// " base02    #073642  0/4 black    235 #262626 20 -12 -12   7  54  66 192  90  26
-// " base01    #586e75 10/7 brgreen  240 #4e4e4e 45 -07 -07  88 110 117 194  25  46
-// " base00    #657b83 11/7 bryellow 241 #585858 50 -07 -07 101 123 131 195  23  51
-// " base0     #839496 12/6 brblue   244 #808080 60 -06 -03 131 148 150 186  13  59
-// " base1     #93a1a1 14/4 brcyan   245 #8a8a8a 65 -05 -02 147 161 161 180   9  63
-// " base2     #eee8d5  7/7 white    254 #d7d7af 92 -00  10 238 232 213  44  11  93
-// " base3     #fdf6e3 15/7 brwhite  230 #ffffd7 97  00  10 253 246 227  44  10  99
 
 const colorsCoPrefix = "https://coolors.co/";
 
-const r1 = 0.5;
-const r2 = 0.25;
 
 function distance(c1: Color, c2: Color, f: ((x: number) => number)) {
   const l1 = c1.rgb().array();
@@ -110,15 +96,7 @@ const getHues2Constant2 = [
   Color("#FF00FF"),
 ];
 
-function getHues2(hue1: any) {
-  const colors = [
-    hue1["1"],
-    hue1["2"],
-    hue1["3"],
-    hue1["4"],
-    hue1["5"],
-    hue1["6"],
-  ];
+function getHues2(colors: Color[]): Color[] {
   const order: number[] = _.minBy(getHues2Constant1, order =>
       distance(colors[order[0]], getHues2Constant2[0], Math.abs) +
       distance(colors[order[1]], getHues2Constant2[1], Math.abs) +
@@ -127,71 +105,122 @@ function getHues2(hue1: any) {
       distance(colors[order[4]], getHues2Constant2[4], Math.abs) +
       distance(colors[order[5]], getHues2Constant2[5], Math.abs)
   )!;
-  return {
-    r: colors[order[0]],
-    y: colors[order[1]],
-    g: colors[order[2]],
-    c: colors[order[3]],
-    b: colors[order[4]],
-    m: colors[order[5]],
-  }
+  return [
+    colors[order[0]],
+    colors[order[1]],
+    colors[order[2]],
+    colors[order[3]],
+    colors[order[4]],
+    colors[order[5]],
+  ]
 }
 function getColor(cs: { [k: string]: Color }, abbr: string) {
   return mix(_.map(abbr.trim().split(""), c => cs[c]));
 }
 
-function getTemplateVariable(cs: Color[]) {
-  const hues1 = {
-    i: cs[0],
-    d: cs[1],
-    l: cs[2],
-    w: cs[3],
-    "1": cs[4],
-    "2": cs[5],
-    "3": cs[6],
-    "4": cs[7],
-    "5": cs[8],
-    "6": cs[9],
+const r1 = 0.5;
+const r2 = 0.25;
+
+function getTemplateVariable(cs: { [k: string]: Color }) {
+  return Object.fromEntries(_.flatMap(cs, (v,k) => {
+    return [
+      [k+"_hex", v.hex()],
+      [k+"_r", v.red()],
+      [k+"_g", v.green()],
+      [k+"_b", v.blue()],
+      []
+
+    ];
+  }));
+}
+function getMixedColors(cs: Color[], r1: number, r2: number) {
+  const cs6 = [cs[4], cs[6], cs[7], cs[8], cs[10], cs[11]];
+  const order: number[] = _.minBy(getHues2Constant1, order =>
+      distance(cs6[order[0]], getHues2Constant2[0], Math.abs) +
+      distance(cs6[order[1]], getHues2Constant2[1], Math.abs) +
+      distance(cs6[order[2]], getHues2Constant2[2], Math.abs) +
+      distance(cs6[order[3]], getHues2Constant2[3], Math.abs) +
+      distance(cs6[order[4]], getHues2Constant2[4], Math.abs) +
+      distance(cs6[order[5]], getHues2Constant2[5], Math.abs)
+  )!;
+  const order2 = [];
+  order2[order[0]] = 0;
+  order2[order[1]] = 1;
+  order2[order[2]] = 2;
+  order2[order[3]] = 3;
+  order2[order[4]] = 4;
+  order2[order[5]] = 5;
+
+  const cs2 = [
+    cs6[order[0]],
+    cs6[order[1]],
+    cs6[order[2]],
+    cs6[order[3]],
+    cs6[order[4]],
+    cs6[order[5]],
+  ];
+  
+  const extra = {
+    bg_d: cs[0],
+    bg_s: cs[0],
+    bg: cs[1],
+    // c0_d: cs[2 ].mix(cs[1], 1-r2), c0_s: cs[2 ].mix(cs[1],r2), c0: cs[2 ], c0_h: cs[2 ].mix(cs[3], r1),
+    // C0_BG, C0_B, C0, C0_W
+    c0_d: cs[2 ].mix(cs[1], 1-r2), c0_s: cs[2 ].mix(cs[1],r2), c0: cs[2 ], c0_h: cs[3],
+    c1_d: cs[4 ].mix(cs[1], 1-r2), c1_s: cs[4 ].mix(cs[1],r2), c1: cs[4 ], c1_h: cs[4 ].mix(cs[3], r1),
+    c2_d: cs[5 ].mix(cs[1], 1-r2), c2_s: cs[5 ].mix(cs[1],r2), c2: cs[5 ], c2_h: cs[5 ].mix(cs[3], r1),
+    c3_d: cs[6 ].mix(cs[1], 1-r2), c3_s: cs[6 ].mix(cs[1],r2), c3: cs[6 ], c3_h: cs[6 ].mix(cs[3], r1),
+    c4_d: cs[7 ].mix(cs[1], 1-r2), c4_s: cs[7 ].mix(cs[1],r2), c4: cs[7 ], c4_h: cs[7 ].mix(cs[3], r1),
+    c5_d: cs[8 ].mix(cs[1], 1-r2), c5_s: cs[8 ].mix(cs[1],r2), c5: cs[8 ], c5_h: cs[8 ].mix(cs[3], r1),
+    c6_d: cs[9 ].mix(cs[1], 1-r2), c6_s: cs[9 ].mix(cs[1],r2), c6: cs[9 ], c6_h: cs[9 ].mix(cs[3], r1),
+    c7_d: cs[10].mix(cs[1], 1-r2), c7_s: cs[10].mix(cs[1],r2), c7: cs[10], c7_h: cs[10].mix(cs[3], r1),
+    c8_d: cs[11].mix(cs[1], 1-r2), c8_s: cs[11].mix(cs[1],r2), c8: cs[11], c8_h: cs[11].mix(cs[3], r1),
+
+    cr_d: cs2[0].mix(cs[1], 1-r2), cr_s: cs2[0].mix(cs[1],r2), cr: cs2[0], cr_h: cs2[0].mix(cs[3], r1),
+    cy_d: cs2[1].mix(cs[1], 1-r2), cy_s: cs2[1].mix(cs[1],r2), cy: cs2[1], cy_h: cs2[1].mix(cs[3], r1),
+    cg_d: cs2[2].mix(cs[1], 1-r2), cg_s: cs2[2].mix(cs[1],r2), cg: cs2[2], cg_h: cs2[2].mix(cs[3], r1),
+    cc_d: cs2[3].mix(cs[1], 1-r2), cc_s: cs2[3].mix(cs[1],r2), cc: cs2[3], cc_h: cs2[3].mix(cs[3], r1),
+    cb_d: cs2[4].mix(cs[1], 1-r2), cb_s: cs2[4].mix(cs[1],r2), cb: cs2[4], cb_h: cs2[4].mix(cs[3], r1),
+    cm_d: cs2[5].mix(cs[1], 1-r2), cm_s: cs2[5].mix(cs[1],r2), cm: cs2[5], cm_h: cs2[5].mix(cs[3], r1),
+
+    // c1_ansi: order2[0],
+    // c3_ansi: order2[1],
+    // c4_ansi: order2[2],
+    // c5_ansi: order2[3],
+    // c7_ansi: order2[4],
+    // c8_ansi: order2[5],
+    // c1_h_ansi: order2[0]+8,
+    // c3_h_ansi: order2[1]+8,
+    // c4_h_ansi: order2[2]+8,
+    // c5_h_ansi: order2[3]+8,
+    // c7_h_ansi: order2[4]+8,
+    // c8_h_ansi: order2[5]+8,
   }
-  const hues2  = getHues2(hues1);
-  return _.assign({}, hues1, hues2);
-  // const colorsWithShades: { [k: string]: Color } = Object.fromEntries(_.flatMap(colors, (v, k) => [
-  //     [k, v],
-  //     [k+"_bg", v.mix(bgfg.bg, 1-r2)],
-  //     [k+"_bright", v.mix(bgfg.fg_brightest, r1)],
-  //     [k+"_dark", v.mix(bgfg.bg, r2)],
-  // ]));
+  return extra;
 }
 
-const contrastIndex = [2,2,0,0,0,0,0,0,0,0];
+const contrastIndex = [2,2,0,0,0,0,0,0,0,0,0,0];
+const previewListRows = "012345678";
+const previewListColumns: [string, ((c: string) => string), ((c: string) => string)][] = [
+  ["cx_d", c => `c${c}_d`, c => `c${c}`],
+  ["cx_s", c => `c${c}_s`, c => `c${c}_d`],
+  ["cx", c => `c${c}`, c => `c${c}_d`],
+  ["cx_h", c => `c${c}_h`, c => `c${c}_d`],
+  ["Colored Bg", c => `c${c}_d`, c => `c0`],
+  ["Brighter Bg", c => `c0_d`, c => `c${c}`],
+  ["Darker Fg", c => `bg`, c => `c${c}_s`],
+  ["Normal", c => `bg`, c => `c${c}`],
+  ["Brighter Fg", c => `bg`, c => `c${c}_h`],
+];
 
 function getVar(i: number|string) {
-  return `var(--base10-${i})`;
+  return `var(--base${N}-${i})`;
 }
 
 const cellStyles = _.times(N, i => ({
   "background-color": getVar(i),
   color: getVar(contrastIndex[i]),
 }));
-
-function tmpGetColorStyle(c: Color, i: number): any {
-  return {
-    position: 'absolute',
-    left: `${c.hue()/3.6}%`,
-    top: `${c.saturationv()}%`,
-    "background-color": getVar(i),
-    color: getVar(contrastIndex[i]),
-  }
-}
-
-function tmpGetColorStyle2(c: Color, i: number): any {
-  return {
-    position: 'absolute',
-    left: `${c.value()}%`,
-    "background-color": getVar(i),
-    color: getVar(contrastIndex[i]),
-  }
-}
 
 function changeColorsCo(url: string): Color[] {
   if(!_.startsWith(url, colorsCoPrefix)) {
@@ -200,64 +229,68 @@ function changeColorsCo(url: string): Color[] {
     url = url.substring(colorsCoPrefix.length);
     return _.map(url.split("-"), s => Color(`#${s}`));
   }
-
-}
-/*
-
-0,95,135,175,215,255
-95,40,40,40,40
-*/
-
-/**
- * Converts integer between 0 and 255 to two digit hex.
- */
-function toHex2(n: number): string {
-  const rtn = n.toString(16);
-  if(rtn.length === 1) {
-    return "0"+rtn;
-  }
-  return rtn;
 }
 
 export default defineComponent({
+  components: {
+    Slider
+  },
   data(vm) {
     const colors = changeColorsCo(sampleColors2.dracula);
     return {
       selectedColorIndex: 0,
+      r1: 0.5,
+      r2: 0.25,
       colors,
       schemeObjs,
-      previewList: [
-        "ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ","ww      ",
-        "wwll    ","ww11    ","ww12    ","ww22    ","ww23    ","ww33    ","ww34    ","ww44    ","ww45    ","ww55    ","ww56    ","ww61    ","ww66    ",
-        "ll      ","11      ","12      ","22      ","23      ","33      ","34      ","44      ","45      ","55      ","56      ","61      ","66      ",
-        "ddllll  ","dd1111  ","dd1212  ","dd2222  ","dd2323  ","dd3333  ","dd3434  ","dd4444  ","dd4545  ","dd5555  ","dd5656  ","dd6161  ","dd6666  ",
-        "lldddd  ","11dddd  ","12dddd  ","22dddd  ","23dddd  ","33dddd  ","34dddd  ","44dddd  ","45dddd  ","55dddd  ","56dddd  ","61dddd  ","66dddd  ",
-        "dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ","dd      ",
-        "iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ","iidd    ",
-        "ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ","ii      ",
-      ],
-      // tmp: {a:1,b:2},
       cellStyles,
+      previewListRows,
+      previewListColumns,
+      previewNumber: (bg: Color, fg: Color) => {
+        return fg.contrast(bg);
+      },
     }
   },
   created() {
     return {
       Color,
-      // cellStyles,
-      // schemeObjs,
-      // tmp: {a:1,b:2},
+      _,
     };
   },
   computed: {
     cssVariable(): {[key: string]: string} {
-      return Object.fromEntries(_.map(this.colors, (c,i) => [`--base10-${i}`, c.hex()]));
+      return Object.fromEntries(_.map(this.colors, (c,i) => [`--base${N}-${i}`, c.hex()]));
     },
-    expanedColors() {
-      return getTemplateVariable(this.colors);
+    expandedColors() {
+      return getMixedColors(this.colors, this.r1, this.r2);
     },
     colorsCoString(): string {
       return colorsCoPrefix+
         _.map(this.colors, c => c.hex().toString().toLowerCase().substring(1)).join("-");
+    },
+    previewList() {
+      // return _.flatMap(bgfg, ([bg,fg]) => _.map("012345678rygcbm".split(""), c => {
+      return _.flatMap(previewListRows.split(""), c =>  _.map(previewListColumns, ([s, bg,fg]) => {
+        if(c === ' ') {
+          return {
+            bg: this.expandedColors['bg_s'],
+            fg: this.expandedColors['bg_d'],
+          };
+        }
+        const cbg = this.expandedColors[bg(c)];
+        const cfg = this.expandedColors[fg(c)];
+        return {
+          bg: cbg,
+          fg: cfg,
+        };
+      }));
+    },
+    ansiList() {
+      const m = this.expandedColors;
+      return [
+        m.bg,   m.cr,   m.cg,   m.cy,   m.cb,   m.cm,   m.cc,   m.c0,
+        m.c0_d, m.cr_h, m.cg_h, m.cy_h, m.cb_h, m.cm_h, m.cc_h, m.c0_h,
+      ];
     },
   },
   props: {
@@ -281,6 +314,9 @@ export default defineComponent({
         // this.colors[i] = this.colors[i];
       }
     },
+    reorder(order: number[]) {
+      this.colors = _.map(order, i => this.colors[i]);
+    },
     setScheme(schemeObj: any) {
       function tmp(i: number) {
         let colorStr = schemeObj[base24Digits[i]];
@@ -289,17 +325,25 @@ export default defineComponent({
         }
         return Color(colorStr);
       }
+      const c16 = _.times(16, tmp);
+      let iw = [Color("#000000"), Color("#FFFFFF")];
+      if(c16[0].lightness() > c16[5].lightness()) {
+        iw = [iw[1],iw[0]];
+      }
+      
       this.colors = [
-        Color("#000000"),
-        tmp(0),
-        tmp(5),
-        Color("#FFFFFF"),
-        tmp(8),
-        tmp(10),
-        tmp(11),
-        tmp(12),
-        tmp(13),
-        tmp(14),
+        iw[0],
+        c16[0],
+        c16[5],
+        iw[1],
+        c16[8],
+        c16[9],
+        c16[10],
+        c16[11],
+        c16[12],
+        c16[12].mix(c16[13]),
+        c16[13],
+        c16[14],
       ]
     },
     changeColorsCo(url: string) {
@@ -310,6 +354,22 @@ export default defineComponent({
 </script>
 <template>
 <div v-bind:style="cssVariable">
+  <Slider
+    style="width: 30%"
+    :max="1"
+    :min="0"
+    :step="0.01"
+    :format="{decimals:2}"
+    v-model="r1"
+  />
+  <Slider
+    style="width: 30%"
+    :max="1"
+    :min="0"
+    :step="0.01"
+    :format="{decimals:2}"
+    v-model="r2"
+  />
   <div class="scheme-list">
     <button
       v-for="(schemeObj, key) in schemeObjs"
@@ -329,14 +389,38 @@ export default defineComponent({
       v-on:change="changeColorText(i, $event)"
     />
   </div>
-  <div class="preview-list" >
+  <div
+    class="preview-list"
+    :style="{'grid-template-columns': '1fr '.repeat(previewListColumns.length) }"
+  >
     <div
       class="preview-cell"
-      :style="getPreviewStyle(c)"
-      v-for="(c, i) in previewList"
+      :style="{ background: colors[1].hex(), color: colors[2].hex()}"
+      v-for="([s], i) in previewListColumns"
       v-bind:key="i"
     >
-      {{getPreviewStyle(c).background}}
+      {{s}}
+    </div>
+    <div
+      class="preview-cell"
+      :style="{ background: bg.hex(), color: fg.hex()}"
+      v-for="({bg,fg}, i) in previewList"
+      v-bind:key="i"
+    >
+      {{previewNumber(bg,fg).toFixed(3)}}
+      <!-- {{fg.luminosity().toFixed(3)}} {{bg.luminosity().toFixed(3)}} -->
+    </div>
+  </div>
+  <div
+    class="ansi-list"
+  >
+    <div
+      class="ansi-cell"
+      :style="{ background: c.hex(), color: white}"
+      v-for="(c, i) in ansiList"
+      v-bind:key="i"
+    >
+      {{c.hex()}}
     </div>
   </div>
 
@@ -346,13 +430,16 @@ export default defineComponent({
     v-on:change="changeColorsCo($event.value)"
   />
   <span> selected: {{ selectedColorIndex }} </span>
+  <button v-on:click="reorder([3,2,1,0,4,5,6,7,8,9,10,11])">dark/light</button> 
+  <button v-on:click="reorder([0,1,2,3,8,9,10,11,4,5,6,7])">inverse hue</button> 
+  <button v-on:click="reorder([0,1,2,3,6,5,4,11,10,9,8,7])">mirror hue</button> 
 </div>
 </template>
-
+<style src="@vueform/slider/themes/default.css"></style>
 <style scoped>
 .color-list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
 .color-cell {
@@ -366,13 +453,24 @@ export default defineComponent({
 }
 .preview-list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  column-gap: 2px;
+  background: var(--base12-0);
+  /* grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; */
 }
 .preview-cell {
   height: 20px;
 }
 .colors-co-input {
   width: 100%;
+}
+.ansi-list {
+  display: grid;
+  /* column-gap: 2px;
+  background: var(--base12-0); */
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+.preview-cell {
+  height: 20px;
 }
 
 a {

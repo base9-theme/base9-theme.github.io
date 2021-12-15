@@ -16,6 +16,7 @@
     "@types/lodash": "^4.14.177",
     "@types/mustache": "^4.1.2",
     "@vitejs/plugin-vue": "^1.9.3",
+    "@vueform/slider": "^2.0.8",
     "color": "^4.0.2",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
