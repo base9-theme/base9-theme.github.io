@@ -93,6 +93,30 @@ const cellStyles = _.times(N, i => ({
   color: getVar(contrastIndex[i]),
 }));
 
+function tmpGetColorStyle(c: Color, i: number): any {
+  return {
+    position: 'absolute',
+    left: `${c.hue()/3.6}%`,
+    top: `${c.saturationv()}%`,
+    "background-color": getVar(i),
+    color: getVar(contrastIndex[i]),
+  }
+}
+
+function tmpGetColorStyle2(c: Color, i: number): any {
+  return {
+    position: 'absolute',
+    left: `${c.value()}%`,
+    "background-color": getVar(i),
+    color: getVar(contrastIndex[i]),
+  }
+}
+/*
+
+0,95,135,175,215,255
+95,40,40,40,40
+*/
+
 /**
  * Converts integer between 0 and 255 to two digit hex.
  */
@@ -167,6 +191,16 @@ export default defineComponent({
   computed: {
     cssVariable(): {[key: string]: string} {
       return Object.fromEntries(_.map(this.colors, (c,i) => [`--base24-${i}`, c.hex()]));
+    },
+    wheel(): any {
+      return {
+        colorStyles: _.map(this.colors, (color, i) => {
+          return tmpGetColorStyle(color, i);
+        }),
+        colorStyles2: _.map(this.colors, (color, i) => {
+          return tmpGetColorStyle2(color, i);
+        }),
+      }
     }
   },
   props: {
@@ -269,9 +303,6 @@ export default defineComponent({
       class="scheme-cell"
     > {{ schemeObj.scheme }} </button>
   </div>
-
-
-
   <div class="color-list" >
     <input
       class="color-cell"
@@ -299,6 +330,23 @@ export default defineComponent({
     >{{name}}</option>
   </select>
   <textarea v-model="importExportText" placeholder="add multiple lines"></textarea>
+  <div class="color-wheel">
+    <div
+      class="color-cell"
+      :style="wheel.colorStyles[i]"
+      v-for="(color, i) in colors"
+      v-bind:key="i"
+    >{{i}}</div>
+  </div>
+  <div class="color-wheel2">
+    <div
+      class="color-cell"
+      :style="wheel.colorStyles2[i]"
+      v-for="(color, i) in colors"
+      v-bind:key="i"
+    >{{i}}</div>
+  </div>
+
 </div>
 </template>
 
@@ -333,5 +381,15 @@ code {
   padding: 2px 4px;
   border-radius: 4px;
   color: #304455;
+}
+.color-wheel {
+  height: 300px;
+  position: relative;
+  border: black solid 1px;
+}
+.color-wheel2 {
+  height: 20px;
+  position: relative;
+  border: black solid 1px;
 }
 </style>
