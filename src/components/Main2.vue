@@ -8,13 +8,13 @@ import _ from 'lodash'
 import {getNamedColors} from '../colors';
 import {render} from '../template';
 
-const schemesRaw = import.meta.globEager("../assets/schemes/*.yaml")
+const schemesRaw = import.meta.globEager("../assets/schemes-base16/*.yaml")
 import terminalrcRaw from "../assets/templates/terminalrc.mustache?raw";
 import base24Raw from "../assets/templates/base24.mustache?raw";
 import Mustache from 'mustache';
 
 const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k,v]) => ([
-  ((/\.\.\/assets\/schemes\/(.*)\.yaml/.exec(k)||[])[1]),
+  ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k)||[])[1]),
   v.default,
 ])));
 
@@ -318,15 +318,5 @@ code {
   padding: 2px 4px;
   border-radius: 4px;
   color: #304455;
-}
-.color-wheel {
-  height: 300px;
-  position: relative;
-  border: black solid 1px;
-}
-.color-wheel2 {
-  height: 20px;
-  position: relative;
-  border: black solid 1px;
 }
 </style>
