@@ -1,11 +1,12 @@
 <script lang="ts">
-import Slider from '@vueform/slider';
 import { defineComponent, ref, VueElement } from 'vue'
 
 // import tmp from '..assets'
 import yaml from 'js-yaml'
 import Color from 'color'
 import _ from 'lodash'
+import {getNamedColors} from '../colors';
+import {render} from '../template';
 
 const schemesRaw = import.meta.globEager("../assets/schemes/*.yaml")
 import terminalrcRaw from "../assets/templates/terminalrc.mustache?raw";
@@ -44,163 +45,18 @@ const base24Digits = [
   'base17',
 ]
 
-const N = 12;
+const N = 11;
 const sampleColors2 = {
-  dracula: "https://coolors.co/000000-282A36-F8F8F2-FFFFFF-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-A4BEFB-BD93F9-FF79C6",
-  default: "https://coolors.co/000000-181818-D8D8D8-FFFFFF-AB4642-DC9656-F7CA88-A1B56C-86C1B9-81B8BE-7CAFC2-BA8BAF",
-  solarized: "https://coolors.co/000000-002b36-93a1a1-fdf6e3-dc322f-CB4B16-b58900-859900-2aa198-268BD2-6c71c4-d33682",
+  dracula: "https://coolors.co/000000-282A36-F8F8F2-FFFFFF-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
+  default: "https://coolors.co/000000-181818-D8D8D8-FFFFFF-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
+  solarized: "https://coolors.co/000000-002b36-93a1a1-fdf6e3-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682",
 }
 
 const colorsCoPrefix = "https://coolors.co/";
 
 
-function distance(c1: Color, c2: Color, f: ((x: number) => number)) {
-  const l1 = c1.rgb().array();
-  const l2 = c2.rgb().array();
-  return f(l1[0]-l2[0])+f(l1[1]-l2[1])+f(l1[2]-l2[2]);
-}
-function mix(cs: Color[]): Color {
-  const sum = _.reduce(cs, (rgb, c) => {
-    rgb[0] += c.red();
-    rgb[1] += c.green();
-    rgb[2] += c.blue();
-    return rgb;
-  },[0,0,0]);
-  return Color([
-    Math.ceil(sum[0]/cs.length),
-    Math.ceil(sum[1]/cs.length),
-    Math.ceil(sum[2]/cs.length),
-  ]);
-}
-const getHues2Constant1 = [
-  [0,1,2,3,4,5],
-  [1,2,3,4,5,0],
-  [2,3,4,5,0,1],
-  [3,4,5,0,1,2],
-  [4,5,0,1,2,3],
-  [5,0,1,2,3,4],
-
-  [5,4,3,2,1,0],
-  [0,5,4,3,2,1],
-  [1,0,5,4,3,2],
-  [2,1,0,5,4,3],
-  [3,2,1,0,5,4],
-  [4,3,2,1,0,5],
-];
-const getHues2Constant2 = [
-  Color("#FF0000"),
-  Color("#FFFF00"),
-  Color("#00FF00"),
-  Color("#00FFFF"),
-  Color("#0000FF"),
-  Color("#FF00FF"),
-];
-
-function getHues2(colors: Color[]): Color[] {
-  const order: number[] = _.minBy(getHues2Constant1, order =>
-      distance(colors[order[0]], getHues2Constant2[0], Math.abs) +
-      distance(colors[order[1]], getHues2Constant2[1], Math.abs) +
-      distance(colors[order[2]], getHues2Constant2[2], Math.abs) +
-      distance(colors[order[3]], getHues2Constant2[3], Math.abs) +
-      distance(colors[order[4]], getHues2Constant2[4], Math.abs) +
-      distance(colors[order[5]], getHues2Constant2[5], Math.abs)
-  )!;
-  return [
-    colors[order[0]],
-    colors[order[1]],
-    colors[order[2]],
-    colors[order[3]],
-    colors[order[4]],
-    colors[order[5]],
-  ]
-}
-function getColor(cs: { [k: string]: Color }, abbr: string) {
-  return mix(_.map(abbr.trim().split(""), c => cs[c]));
-}
-
-const r1 = 0.5;
-const r2 = 0.25;
-
-function getTemplateVariable(cs: { [k: string]: Color }) {
-  return Object.fromEntries(_.flatMap(cs, (v,k) => {
-    return [
-      [k+"_hex", v.hex()],
-      [k+"_r", v.red()],
-      [k+"_g", v.green()],
-      [k+"_b", v.blue()],
-      []
-
-    ];
-  }));
-}
-function getMixedColors(cs: Color[], r1: number, r2: number) {
-  const cs6 = [cs[4], cs[6], cs[7], cs[8], cs[10], cs[11]];
-  const order: number[] = _.minBy(getHues2Constant1, order =>
-      distance(cs6[order[0]], getHues2Constant2[0], Math.abs) +
-      distance(cs6[order[1]], getHues2Constant2[1], Math.abs) +
-      distance(cs6[order[2]], getHues2Constant2[2], Math.abs) +
-      distance(cs6[order[3]], getHues2Constant2[3], Math.abs) +
-      distance(cs6[order[4]], getHues2Constant2[4], Math.abs) +
-      distance(cs6[order[5]], getHues2Constant2[5], Math.abs)
-  )!;
-  const order2 = [];
-  order2[order[0]] = 0;
-  order2[order[1]] = 1;
-  order2[order[2]] = 2;
-  order2[order[3]] = 3;
-  order2[order[4]] = 4;
-  order2[order[5]] = 5;
-
-  const cs2 = [
-    cs6[order[0]],
-    cs6[order[1]],
-    cs6[order[2]],
-    cs6[order[3]],
-    cs6[order[4]],
-    cs6[order[5]],
-  ];
-  
-  const extra = {
-    bg_d: cs[0],
-    bg_s: cs[0],
-    bg: cs[1],
-    // c0_d: cs[2 ].mix(cs[1], 1-r2), c0_s: cs[2 ].mix(cs[1],r2), c0: cs[2 ], c0_h: cs[2 ].mix(cs[3], r1),
-    // C0_BG, C0_B, C0, C0_W
-    c0_d: cs[2 ].mix(cs[1], 1-r2), c0_s: cs[2 ].mix(cs[1],r2), c0: cs[2 ], c0_h: cs[3],
-    c1_d: cs[4 ].mix(cs[1], 1-r2), c1_s: cs[4 ].mix(cs[1],r2), c1: cs[4 ], c1_h: cs[4 ].mix(cs[3], r1),
-    c2_d: cs[5 ].mix(cs[1], 1-r2), c2_s: cs[5 ].mix(cs[1],r2), c2: cs[5 ], c2_h: cs[5 ].mix(cs[3], r1),
-    c3_d: cs[6 ].mix(cs[1], 1-r2), c3_s: cs[6 ].mix(cs[1],r2), c3: cs[6 ], c3_h: cs[6 ].mix(cs[3], r1),
-    c4_d: cs[7 ].mix(cs[1], 1-r2), c4_s: cs[7 ].mix(cs[1],r2), c4: cs[7 ], c4_h: cs[7 ].mix(cs[3], r1),
-    c5_d: cs[8 ].mix(cs[1], 1-r2), c5_s: cs[8 ].mix(cs[1],r2), c5: cs[8 ], c5_h: cs[8 ].mix(cs[3], r1),
-    c6_d: cs[9 ].mix(cs[1], 1-r2), c6_s: cs[9 ].mix(cs[1],r2), c6: cs[9 ], c6_h: cs[9 ].mix(cs[3], r1),
-    c7_d: cs[10].mix(cs[1], 1-r2), c7_s: cs[10].mix(cs[1],r2), c7: cs[10], c7_h: cs[10].mix(cs[3], r1),
-    c8_d: cs[11].mix(cs[1], 1-r2), c8_s: cs[11].mix(cs[1],r2), c8: cs[11], c8_h: cs[11].mix(cs[3], r1),
-
-    cr_d: cs2[0].mix(cs[1], 1-r2), cr_s: cs2[0].mix(cs[1],r2), cr: cs2[0], cr_h: cs2[0].mix(cs[3], r1),
-    cy_d: cs2[1].mix(cs[1], 1-r2), cy_s: cs2[1].mix(cs[1],r2), cy: cs2[1], cy_h: cs2[1].mix(cs[3], r1),
-    cg_d: cs2[2].mix(cs[1], 1-r2), cg_s: cs2[2].mix(cs[1],r2), cg: cs2[2], cg_h: cs2[2].mix(cs[3], r1),
-    cc_d: cs2[3].mix(cs[1], 1-r2), cc_s: cs2[3].mix(cs[1],r2), cc: cs2[3], cc_h: cs2[3].mix(cs[3], r1),
-    cb_d: cs2[4].mix(cs[1], 1-r2), cb_s: cs2[4].mix(cs[1],r2), cb: cs2[4], cb_h: cs2[4].mix(cs[3], r1),
-    cm_d: cs2[5].mix(cs[1], 1-r2), cm_s: cs2[5].mix(cs[1],r2), cm: cs2[5], cm_h: cs2[5].mix(cs[3], r1),
-
-    // c1_ansi: order2[0],
-    // c3_ansi: order2[1],
-    // c4_ansi: order2[2],
-    // c5_ansi: order2[3],
-    // c7_ansi: order2[4],
-    // c8_ansi: order2[5],
-    // c1_h_ansi: order2[0]+8,
-    // c3_h_ansi: order2[1]+8,
-    // c4_h_ansi: order2[2]+8,
-    // c5_h_ansi: order2[3]+8,
-    // c7_h_ansi: order2[4]+8,
-    // c8_h_ansi: order2[5]+8,
-  }
-  return extra;
-}
-
-const contrastIndex = [2,2,0,0,0,0,0,0,0,0,0,0];
-const previewListRows = "012345678";
+const contrastIndex = [2,2,0,0,0,0,0,0,0,0,0];
+const previewListRows = "01234567";
 const previewListColumns: [string, ((c: string) => string), ((c: string) => string)][] = [
   ["cx_d", c => `c${c}_d`, c => `c${c}`],
   ["cx_s", c => `c${c}_s`, c => `c${c}_d`],
@@ -232,9 +88,6 @@ function changeColorsCo(url: string): Color[] {
 }
 
 export default defineComponent({
-  components: {
-    Slider
-  },
   data(vm) {
     const colors = changeColorsCo(sampleColors2.dracula);
     return {
@@ -262,7 +115,7 @@ export default defineComponent({
       return Object.fromEntries(_.map(this.colors, (c,i) => [`--base${N}-${i}`, c.hex()]));
     },
     expandedColors() {
-      return getMixedColors(this.colors, this.r1, this.r2);
+      return getNamedColors(this.colors, this.r1, this.r2);
     },
     colorsCoString(): string {
       return colorsCoPrefix+
@@ -300,12 +153,6 @@ export default defineComponent({
     setColor(i: number, c: Color) {
       this.colors[i] = c;
     },
-    getPreviewStyle(c: string) {
-      const color = getColor(this.expanedColors, c);
-      return {
-        background: color.hex().toString(),
-      }
-    },
     changeColorText(i: number, e: Event) {
       try {
         const element = e.currentTarget as HTMLInputElement;
@@ -341,35 +188,19 @@ export default defineComponent({
         c16[10],
         c16[11],
         c16[12],
-        c16[12].mix(c16[13]),
         c16[13],
         c16[14],
       ]
     },
-    changeColorsCo(url: string) {
-      this.colors = changeColorsCo(url);
+    changeColorsCo(e: Event) {
+      const element = e.currentTarget as HTMLInputElement;
+      this.colors = changeColorsCo(element.value);
     },
   }
 });
 </script>
 <template>
 <div v-bind:style="cssVariable">
-  <Slider
-    style="width: 30%"
-    :max="1"
-    :min="0"
-    :step="0.01"
-    :format="{decimals:2}"
-    v-model="r1"
-  />
-  <Slider
-    style="width: 30%"
-    :max="1"
-    :min="0"
-    :step="0.01"
-    :format="{decimals:2}"
-    v-model="r2"
-  />
   <div class="scheme-list">
     <button
       v-for="(schemeObj, key) in schemeObjs"
@@ -416,7 +247,7 @@ export default defineComponent({
   >
     <div
       class="ansi-cell"
-      :style="{ background: c.hex(), color: white}"
+      :style="{ background: c.hex(), color: 'white'}"
       v-for="(c, i) in ansiList"
       v-bind:key="i"
     >
@@ -427,7 +258,7 @@ export default defineComponent({
 
   <input class="colors-co-input"
     :value="colorsCoString"
-    v-on:change="changeColorsCo($event.value)"
+    v-on:change="changeColorsCo"
   />
   <span> selected: {{ selectedColorIndex }} </span>
   <button v-on:click="reorder([3,2,1,0,4,5,6,7,8,9,10,11])">dark/light</button> 
