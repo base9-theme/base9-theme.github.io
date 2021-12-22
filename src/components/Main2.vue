@@ -13,6 +13,7 @@ import terminalrcRaw from "../assets/templates/terminalrc.mustache?raw";
 import base24Raw from "../assets/templates/base24.mustache?raw";
 import Mustache from 'mustache';
 
+
 const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k,v]) => ([
   ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k)||[])[1]),
   v.default,
@@ -45,18 +46,18 @@ const base24Digits = [
   'base17',
 ]
 
-const N = 11;
+const N = 10;
+const colorsCoPrefix = "https://coolors.co/";
 const sampleColors2 = {
-  dracula: "https://coolors.co/000000-282A36-F8F8F2-FFFFFF-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
-  default: "https://coolors.co/000000-181818-D8D8D8-FFFFFF-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
-  solarized: "https://coolors.co/000000-002b36-93a1a1-fdf6e3-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682",
+  dracula: colorsCoPrefix+"282A36-F8F8F2-FFFFFF-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
+  default: colorsCoPrefix+"181818-D8D8D8-FFFFFF-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
+  solarized: colorsCoPrefix+"002b36-93a1a1-fdf6e3-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682",
 }
 
-const colorsCoPrefix = "https://coolors.co/";
 
 
-const contrastIndex = [2,2,0,0,0,0,0,0,0,0,0];
-const previewListRows = "01234567";
+const contrastIndex = [2,0,0,0,0,0,0,0,0,0];
+const previewListRows = "0123456";
 const previewListColumns: [string, ((c: string) => string), ((c: string) => string)][] = [
   ["cx_d", c => `c${c}_d`, c => `c${c}`],
   ["cx_s", c => `c${c}_s`, c => `c${c}_d`],
@@ -89,6 +90,7 @@ function changeColorsCo(url: string): Color[] {
 
 export default defineComponent({
   data(vm) {
+    debugger;
     const colors = changeColorsCo(sampleColors2.dracula);
     return {
       selectedColorIndex: 0,
@@ -114,7 +116,7 @@ export default defineComponent({
     cssVariable(): {[key: string]: string} {
       return Object.fromEntries(_.map(this.colors, (c,i) => [`--base${N}-${i}`, c.hex()]));
     },
-    expandedColors() {
+    namedColors() {
       return getNamedColors(this.colors, this.r1, this.r2);
     },
     colorsCoString(): string {
@@ -126,12 +128,12 @@ export default defineComponent({
       return _.flatMap(previewListRows.split(""), c =>  _.map(previewListColumns, ([s, bg,fg]) => {
         if(c === ' ') {
           return {
-            bg: this.expandedColors['bg_s'],
-            fg: this.expandedColors['bg_d'],
+            bg: this.namedColors.bg,
+            fg: this.namedColors.bg,
           };
         }
-        const cbg = this.expandedColors[bg(c)];
-        const cfg = this.expandedColors[fg(c)];
+        const cbg = this.namedColors[bg(c)];
+        const cfg = this.namedColors[fg(c)];
         return {
           bg: cbg,
           fg: cfg,
@@ -139,7 +141,7 @@ export default defineComponent({
       }));
     },
     ansiList() {
-      const m = this.expandedColors;
+      const m = this.namedColors;
       return [
         m.bg,   m.cr,   m.cg,   m.cy,   m.cb,   m.cm,   m.cc,   m.c0,
         m.c0_d, m.cr_h, m.cg_h, m.cy_h, m.cb_h, m.cm_h, m.cc_h, m.c0_h,
@@ -179,7 +181,6 @@ export default defineComponent({
       }
       
       this.colors = [
-        iw[0],
         c16[0],
         c16[5],
         iw[1],
@@ -226,7 +227,7 @@ export default defineComponent({
   >
     <div
       class="preview-cell"
-      :style="{ background: colors[1].hex(), color: colors[2].hex()}"
+      :style="{ background: namedColors.bg.hex(), color: namedColors.c0.hex()}"
       v-for="([s], i) in previewListColumns"
       v-bind:key="i"
     >
@@ -261,16 +262,25 @@ export default defineComponent({
     v-on:change="changeColorsCo"
   />
   <span> selected: {{ selectedColorIndex }} </span>
-  <button v-on:click="reorder([3,2,1,0,4,5,6,7,8,9,10,11])">dark/light</button> 
-  <button v-on:click="reorder([0,1,2,3,8,9,10,11,4,5,6,7])">inverse hue</button> 
-  <button v-on:click="reorder([0,1,2,3,6,5,4,11,10,9,8,7])">mirror hue</button> 
+  <button v-on:click="reorder([0,1,2,5,4,3,9,8,7,6])">mirror hue</button> 
+  <div class="wheel">
+    <div
+      v-for="(v,i) in colors.slice(3)"
+      v-bind:key="i"
+      :style="{
+        left: v.hue()/3.6 + '%',
+        top: v.saturationl() + '%',
+        'background-color': v.hex(),
+      }"
+    ></div>
+  </div>
 </div>
 </template>
 <style src="@vueform/slider/themes/default.css"></style>
 <style scoped>
 .color-list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
 .color-cell {
@@ -285,7 +295,7 @@ export default defineComponent({
 .preview-list {
   display: grid;
   column-gap: 2px;
-  background: var(--base12-0);
+  background: var(--base10-0);
   /* grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; */
 }
 .preview-cell {
@@ -304,19 +314,18 @@ export default defineComponent({
   height: 20px;
 }
 
-a {
-  color: #42b983;
+.wheel {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border: 1px black solid;
 }
-
-label {
-  margin: 0 0.5em;
-  font-weight: bold;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #304455;
+.wheel > div {
+  position: absolute;
+  width:40px;
+  height: 40px;
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 10px;
 }
 </style>

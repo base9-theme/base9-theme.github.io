@@ -34,7 +34,7 @@ const getHues2Constant2 = [
 ];
 
 export function getNamedColors(cs: Color[], r1: number = 0.5, r2: number = 0.25): { [k: string]: Color } {
-    const cs6 = [cs[4], cs[6], cs[7], cs[8], cs[9], cs[10]];
+    const cs6 = [cs[3], cs[5], cs[6], cs[7], cs[8], cs[9]];
     const order: number[] = _.minBy(getHues2Constant1, order =>
         difference(cs6[order[0]], getHues2Constant2[0]) +
         difference(cs6[order[1]], getHues2Constant2[1]) +
@@ -60,27 +60,26 @@ export function getNamedColors(cs: Color[], r1: number = 0.5, r2: number = 0.25)
         cs6[order[4]],
         cs6[order[5]],
     ];
+    const bg = cs[0];
+    const wt = cs[2];
 
     return {
-        bg_d: cs[0],
-        bg_s: cs[0],
-        bg: cs[1],
-        c0_d: cs[2].mix(cs[1], 1 - r2), c0_s: cs[2].mix(cs[1], r2), c0: cs[2], c0_h: cs[3],
+        bg,
+        //fg_d: cs[2].mix(bg, 1 - r2), fg_s: cs[2].mix(bg, r2), fg: cs[2], fg_h: wt,
+        c0_d: cs[2].mix(bg, 1 - r2), c0_s: cs[2].mix(bg, r2), c0: cs[2], c0_h: wt,
+        c1_d: cs[4].mix(bg, 1 - r2), c1_s: cs[4].mix(bg, r2), c1: cs[4], c1_h: cs[4].mix(wt, r1),
+        c2_d: cs[5].mix(bg, 1 - r2), c2_s: cs[5].mix(bg, r2), c2: cs[5], c2_h: cs[5].mix(wt, r1),
+        c3_d: cs[6].mix(bg, 1 - r2), c3_s: cs[6].mix(bg, r2), c3: cs[6], c3_h: cs[6].mix(wt, r1),
+        c4_d: cs[7].mix(bg, 1 - r2), c4_s: cs[7].mix(bg, r2), c4: cs[7], c4_h: cs[7].mix(wt, r1),
+        c5_d: cs[8].mix(bg, 1 - r2), c5_s: cs[8].mix(bg, r2), c5: cs[8], c5_h: cs[8].mix(wt, r1),
+        c6_d: cs[9].mix(bg, 1 - r2), c6_s: cs[9].mix(bg, r2), c6: cs[9], c6_h: cs[9].mix(wt, r1),
 
-        c1_d: cs[4].mix(cs[1], 1 - r2), c1_s: cs[4].mix(cs[1], r2), c1: cs[4], c1_h: cs[4].mix(cs[3], r1),
-        c2_d: cs[5].mix(cs[1], 1 - r2), c2_s: cs[5].mix(cs[1], r2), c2: cs[5], c2_h: cs[5].mix(cs[3], r1),
-        c3_d: cs[6].mix(cs[1], 1 - r2), c3_s: cs[6].mix(cs[1], r2), c3: cs[6], c3_h: cs[6].mix(cs[3], r1),
-        c4_d: cs[7].mix(cs[1], 1 - r2), c4_s: cs[7].mix(cs[1], r2), c4: cs[7], c4_h: cs[7].mix(cs[3], r1),
-        c5_d: cs[8].mix(cs[1], 1 - r2), c5_s: cs[8].mix(cs[1], r2), c5: cs[8], c5_h: cs[8].mix(cs[3], r1),
-        c6_d: cs[9].mix(cs[1], 1 - r2), c6_s: cs[9].mix(cs[1], r2), c6: cs[9], c6_h: cs[9].mix(cs[3], r1),
-        c7_d: cs[10].mix(cs[1], 1 - r2), c7_s: cs[10].mix(cs[1], r2), c7: cs[10], c7_h: cs[10].mix(cs[3], r1),
-
-        cr_d: cs2[0].mix(cs[1], 1 - r2), cr_s: cs2[0].mix(cs[1], r2), cr: cs2[0], cr_h: cs2[0].mix(cs[3], r1),
-        cy_d: cs2[1].mix(cs[1], 1 - r2), cy_s: cs2[1].mix(cs[1], r2), cy: cs2[1], cy_h: cs2[1].mix(cs[3], r1),
-        cg_d: cs2[2].mix(cs[1], 1 - r2), cg_s: cs2[2].mix(cs[1], r2), cg: cs2[2], cg_h: cs2[2].mix(cs[3], r1),
-        cc_d: cs2[3].mix(cs[1], 1 - r2), cc_s: cs2[3].mix(cs[1], r2), cc: cs2[3], cc_h: cs2[3].mix(cs[3], r1),
-        cb_d: cs2[4].mix(cs[1], 1 - r2), cb_s: cs2[4].mix(cs[1], r2), cb: cs2[4], cb_h: cs2[4].mix(cs[3], r1),
-        cm_d: cs2[5].mix(cs[1], 1 - r2), cm_s: cs2[5].mix(cs[1], r2), cm: cs2[5], cm_h: cs2[5].mix(cs[3], r1),
+        cr_d: cs2[0].mix(bg, 1 - r2), cr_s: cs2[0].mix(bg, r2), cr: cs2[0], cr_h: cs2[0].mix(wt, r1),
+        cy_d: cs2[1].mix(bg, 1 - r2), cy_s: cs2[1].mix(bg, r2), cy: cs2[1], cy_h: cs2[1].mix(wt, r1),
+        cg_d: cs2[2].mix(bg, 1 - r2), cg_s: cs2[2].mix(bg, r2), cg: cs2[2], cg_h: cs2[2].mix(wt, r1),
+        cc_d: cs2[3].mix(bg, 1 - r2), cc_s: cs2[3].mix(bg, r2), cc: cs2[3], cc_h: cs2[3].mix(wt, r1),
+        cb_d: cs2[4].mix(bg, 1 - r2), cb_s: cs2[4].mix(bg, r2), cb: cs2[4], cb_h: cs2[4].mix(wt, r1),
+        cm_d: cs2[5].mix(bg, 1 - r2), cm_s: cs2[5].mix(bg, r2), cm: cs2[5], cm_h: cs2[5].mix(wt, r1),
 
         // c1_ansi: order2[0],
         // c3_ansi: order2[1],
