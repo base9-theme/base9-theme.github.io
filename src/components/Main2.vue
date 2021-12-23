@@ -1,18 +1,22 @@
 <script lang="ts">
 import { defineComponent, ref, VueElement } from 'vue'
+import Ansi from './Ansi.vue';
 
 // import tmp from '..assets'
 import yaml from 'js-yaml'
 import Color from 'color'
 import _ from 'lodash'
-import {getNamedColors} from '../colors';
+// import {getNamedColors} from '../colors';
+import {getNamedColors} from '../base9';
 import {render} from '../template';
+import semanticRaw from '../assets/semantic.yaml?raw';
+
+const semantic = yaml.load(semanticRaw) as {[k: string]: string};
 
 const schemesRaw = import.meta.globEager("../assets/schemes-base16/*.yaml")
 import terminalrcRaw from "../assets/templates/terminalrc.mustache?raw";
 import base24Raw from "../assets/templates/base24.mustache?raw";
 import Mustache from 'mustache';
-
 
 const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k,v]) => ([
   ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k)||[])[1]),
@@ -46,28 +50,29 @@ const base24Digits = [
   'base17',
 ]
 
-const N = 10;
+const N = 9;
 const colorsCoPrefix = "https://coolors.co/";
 const sampleColors2 = {
-  dracula: colorsCoPrefix+"282A36-F8F8F2-FFFFFF-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
-  default: colorsCoPrefix+"181818-D8D8D8-FFFFFF-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
-  solarized: colorsCoPrefix+"002b36-93a1a1-fdf6e3-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682",
+  dracula: colorsCoPrefix+"282A36-F8F8F2-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
+  default: colorsCoPrefix+"181818-D8D8D8-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
+  solarized: colorsCoPrefix+"002b36-93a1a1-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682",
 }
 
 
 
-const contrastIndex = [2,0,0,0,0,0,0,0,0,0];
-const previewListRows = "0123456";
+const contrastIndex = [1,0,0,0,0,0,0,0,0];
+const previewListRows = "01234567";
 const previewListColumns: [string, ((c: string) => string), ((c: string) => string)][] = [
-  ["cx_d", c => `c${c}_d`, c => `c${c}`],
-  ["cx_s", c => `c${c}_s`, c => `c${c}_d`],
-  ["cx", c => `c${c}`, c => `c${c}_d`],
-  ["cx_h", c => `c${c}_h`, c => `c${c}_d`],
-  ["Colored Bg", c => `c${c}_d`, c => `c0`],
-  ["Brighter Bg", c => `c0_d`, c => `c${c}`],
-  ["Darker Fg", c => `bg`, c => `c${c}_s`],
-  ["Normal", c => `bg`, c => `c${c}`],
-  ["Brighter Fg", c => `bg`, c => `c${c}_h`],
+  // ["cx_b", c => `c${c}_b`, c => `foreground`],
+  // ["cx_m", c => `c${c}_m`, c => `foreground`],
+  // ["cx_s", c => `c${c}_s`, c => `background`],
+  // ["cx", c => `c${c}`, c => `c${c}_b`],
+  // ["cx_h", c => `c${c}_h`, c => `c${c}_b`],
+  ["Colored Bg", c => `c${c}_b`, c => `foreground`],
+  ["Colored Highlight", c => `c${c}_m`, c => `foreground`],
+  ["Softer", c => `background`, c => `c${c}_s`],
+  ["Normal", c => `background`, c => `c${c}`],
+  ["Harder", c => `background`, c => `c${c}_h`],
 ];
 
 function getVar(i: number|string) {
@@ -89,8 +94,10 @@ function changeColorsCo(url: string): Color[] {
 }
 
 export default defineComponent({
+  components: {
+    Ansi,
+  },
   data(vm) {
-    debugger;
     const colors = changeColorsCo(sampleColors2.dracula);
     return {
       selectedColorIndex: 0,
@@ -117,19 +124,18 @@ export default defineComponent({
       return Object.fromEntries(_.map(this.colors, (c,i) => [`--base${N}-${i}`, c.hex()]));
     },
     namedColors() {
-      return getNamedColors(this.colors, this.r1, this.r2);
+      return getNamedColors(this.colors, semantic);
     },
     colorsCoString(): string {
       return colorsCoPrefix+
         _.map(this.colors, c => c.hex().toString().toLowerCase().substring(1)).join("-");
     },
     previewList() {
-      // return _.flatMap(bgfg, ([bg,fg]) => _.map("012345678rygcbm".split(""), c => {
       return _.flatMap(previewListRows.split(""), c =>  _.map(previewListColumns, ([s, bg,fg]) => {
         if(c === ' ') {
           return {
-            bg: this.namedColors.bg,
-            fg: this.namedColors.bg,
+            bg: this.namedColors.background,
+            fg: this.namedColors.foreground,
           };
         }
         const cbg = this.namedColors[bg(c)];
@@ -141,11 +147,7 @@ export default defineComponent({
       }));
     },
     ansiList() {
-      const m = this.namedColors;
-      return [
-        m.bg,   m.cr,   m.cg,   m.cy,   m.cb,   m.cm,   m.cc,   m.c0,
-        m.c0_d, m.cr_h, m.cg_h, m.cy_h, m.cb_h, m.cm_h, m.cc_h, m.c0_h,
-      ];
+      return _.times(16, x => this.namedColors["ansi_"+x.toString(16)])
     },
   },
   props: {
@@ -175,15 +177,9 @@ export default defineComponent({
         return Color(colorStr);
       }
       const c16 = _.times(16, tmp);
-      let iw = [Color("#000000"), Color("#FFFFFF")];
-      if(c16[0].lightness() > c16[5].lightness()) {
-        iw = [iw[1],iw[0]];
-      }
-      
       this.colors = [
         c16[0],
         c16[5],
-        iw[1],
         c16[8],
         c16[9],
         c16[10],
@@ -227,7 +223,7 @@ export default defineComponent({
   >
     <div
       class="preview-cell"
-      :style="{ background: namedColors.bg.hex(), color: namedColors.c0.hex()}"
+      :style="{ background: namedColors.background.hex(), color: namedColors.c0.hex()}"
       v-for="([s], i) in previewListColumns"
       v-bind:key="i"
     >
@@ -243,20 +239,7 @@ export default defineComponent({
       <!-- {{fg.luminosity().toFixed(3)}} {{bg.luminosity().toFixed(3)}} -->
     </div>
   </div>
-  <div
-    class="ansi-list"
-  >
-    <div
-      class="ansi-cell"
-      :style="{ background: c.hex(), color: 'white'}"
-      v-for="(c, i) in ansiList"
-      v-bind:key="i"
-    >
-      {{c.hex()}}
-    </div>
-  </div>
-
-
+  <Ansi :colors="ansiList"></Ansi>
   <input class="colors-co-input"
     :value="colorsCoString"
     v-on:change="changeColorsCo"
@@ -280,7 +263,7 @@ export default defineComponent({
 <style scoped>
 .color-list {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
 .color-cell {
@@ -303,12 +286,6 @@ export default defineComponent({
 }
 .colors-co-input {
   width: 100%;
-}
-.ansi-list {
-  display: grid;
-  /* column-gap: 2px;
-  background: var(--base12-0); */
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 .preview-cell {
   height: 20px;

@@ -8,7 +8,6 @@ export default defineConfig({
     host: true,
     port: 8080,
   },
-  base: '/base24-designer/',
   plugins: [
     vue(),
     content(),
