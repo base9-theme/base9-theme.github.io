@@ -1,25 +1,25 @@
 <script lang="ts">
-import { defineComponent, ref, VueElement } from 'vue'
+import { defineComponent, ref, VueElement } from 'vue';
+import yaml from 'js-yaml';
+import Color from 'color';
+import _ from 'lodash';
+import Mustache from 'mustache';
 import Ansi from './Ansi.vue';
 
 // import tmp from '..assets'
-import yaml from 'js-yaml'
-import Color from 'color'
-import _ from 'lodash'
 // import {getNamedColors} from '../colors';
-import {getNamedColors} from '../base9';
-import {render} from '../template';
-import semanticRaw from '../assets/semantic.yaml?raw';
+import { getNamedColors } from '../base9';
+import { render } from '../template';
+import semanticRaw from '../assets/semantic.yaml';
+import terminalrcRaw from '../assets/templates/terminalrc.mustache?raw';
+import base24Raw from '../assets/templates/base24.mustache?raw';
 
 const semantic = yaml.load(semanticRaw) as {[k: string]: string};
 
-const schemesRaw = import.meta.globEager("../assets/schemes-base16/*.yaml")
-import terminalrcRaw from "../assets/templates/terminalrc.mustache?raw";
-import base24Raw from "../assets/templates/base24.mustache?raw";
-import Mustache from 'mustache';
+const schemesRaw = import.meta.globEager('../assets/schemes-base16/*.yaml');
 
-const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k,v]) => ([
-  ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k)||[])[1]),
+const schemeObjs = Object.fromEntries(_.entries(schemesRaw).map(([k, v]) => ([
+  ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k) || [])[1]),
   v.default,
 ])));
 
@@ -48,49 +48,46 @@ const base24Digits = [
   'base15',
   'base16',
   'base17',
-]
+];
 
 const N = 9;
-const colorsCoPrefix = "https://coolors.co/";
+const colorsCoPrefix = 'https://coolors.co/';
 const sampleColors2 = {
-  dracula: colorsCoPrefix+"282A36-F8F8F2-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6",
-  default: colorsCoPrefix+"181818-D8D8D8-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF",
-  solarized: colorsCoPrefix+"002b36-93a1a1-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682",
-}
+  dracula: `${colorsCoPrefix}282A36-F8F8F2-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6`,
+  default: `${colorsCoPrefix}181818-D8D8D8-AB4642-DC9656-F7CA88-A1B56C-86C1B9-7CAFC2-BA8BAF`,
+  solarized: `${colorsCoPrefix}002b36-93a1a1-dc322f-CB4B16-b58900-859900-2aa198-6c71c4-d33682`,
+};
 
-
-
-const contrastIndex = [1,0,0,0,0,0,0,0,0];
-const previewListRows = "01234567";
+const contrastIndex = [1, 0, 0, 0, 0, 0, 0, 0, 0];
+const previewListRows = '01234567';
 const previewListColumns: [string, ((c: string) => string), ((c: string) => string)][] = [
   // ["cx_b", c => `c${c}_b`, c => `foreground`],
   // ["cx_m", c => `c${c}_m`, c => `foreground`],
   // ["cx_s", c => `c${c}_s`, c => `background`],
   // ["cx", c => `c${c}`, c => `c${c}_b`],
   // ["cx_h", c => `c${c}_h`, c => `c${c}_b`],
-  ["Colored Bg", c => `c${c}_b`, c => `foreground`],
-  ["Colored Highlight", c => `c${c}_m`, c => `foreground`],
-  ["Softer", c => `background`, c => `c${c}_s`],
-  ["Normal", c => `background`, c => `c${c}`],
-  ["Harder", c => `background`, c => `c${c}_h`],
+  ['Colored Bg', (c) => `c${c}_b`, (c) => 'foreground'],
+  ['Colored Highlight', (c) => `c${c}_m`, (c) => 'foreground'],
+  ['Softer', (c) => 'background', (c) => `c${c}_s`],
+  ['Normal', (c) => 'background', (c) => `c${c}`],
+  ['Harder', (c) => 'background', (c) => `c${c}_h`],
 ];
 
 function getVar(i: number|string) {
   return `var(--base${N}-${i})`;
 }
 
-const cellStyles = _.times(N, i => ({
-  "background-color": getVar(i),
+const cellStyles = _.times(N, (i) => ({
+  'background-color': getVar(i),
   color: getVar(contrastIndex[i]),
 }));
 
 function changeColorsCo(url: string): Color[] {
-  if(!_.startsWith(url, colorsCoPrefix)) {
+  if (!_.startsWith(url, colorsCoPrefix)) {
     return [];
-  } else {
-    url = url.substring(colorsCoPrefix.length);
-    return _.map(url.split("-"), s => Color(`#${s}`));
   }
+  url = url.substring(colorsCoPrefix.length);
+  return _.map(url.split('-'), (s) => Color(`#${s}`));
 }
 
 export default defineComponent({
@@ -108,10 +105,8 @@ export default defineComponent({
       cellStyles,
       previewListRows,
       previewListColumns,
-      previewNumber: (bg: Color, fg: Color) => {
-        return fg.contrast(bg);
-      },
-    }
+      previewNumber: (bg: Color, fg: Color) => fg.contrast(bg),
+    };
   },
   created() {
     return {
@@ -121,18 +116,18 @@ export default defineComponent({
   },
   computed: {
     cssVariable(): {[key: string]: string} {
-      return Object.fromEntries(_.map(this.colors, (c,i) => [`--base${N}-${i}`, c.hex()]));
+      return Object.fromEntries(_.map(this.colors, (c, i) => [`--base${N}-${i}`, c.hex()]));
     },
     namedColors() {
       return getNamedColors(this.colors, semantic);
     },
     colorsCoString(): string {
-      return colorsCoPrefix+
-        _.map(this.colors, c => c.hex().toString().toLowerCase().substring(1)).join("-");
+      return colorsCoPrefix
+        + _.map(this.colors, (c) => c.hex().toString().toLowerCase().substring(1)).join('-');
     },
     previewList() {
-      return _.flatMap(previewListRows.split(""), c =>  _.map(previewListColumns, ([s, bg,fg]) => {
-        if(c === ' ') {
+      return _.flatMap(previewListRows.split(''), (c) => _.map(previewListColumns, ([s, bg, fg]) => {
+        if (c === ' ') {
           return {
             bg: this.namedColors.background,
             fg: this.namedColors.foreground,
@@ -147,7 +142,7 @@ export default defineComponent({
       }));
     },
     ansiList() {
-      return _.times(16, x => this.namedColors["ansi_"+x.toString(16)])
+      return _.times(16, (x) => this.namedColors[`ansi_${x.toString(16)}`]);
     },
   },
   props: {
@@ -166,13 +161,13 @@ export default defineComponent({
       }
     },
     reorder(order: number[]) {
-      this.colors = _.map(order, i => this.colors[i]);
+      this.colors = _.map(order, (i) => this.colors[i]);
     },
     setScheme(schemeObj: any) {
       function tmp(i: number) {
         let colorStr = schemeObj[base24Digits[i]];
-        if(colorStr[0] != "#") {
-          colorStr = "#" + colorStr;
+        if (colorStr[0] != '#') {
+          colorStr = `#${colorStr}`;
         }
         return Color(colorStr);
       }
@@ -187,13 +182,13 @@ export default defineComponent({
         c16[12],
         c16[13],
         c16[14],
-      ]
+      ];
     },
     changeColorsCo(e: Event) {
       const element = e.currentTarget as HTMLInputElement;
       this.colors = changeColorsCo(element.value);
     },
-  }
+  },
 });
 </script>
 <template>
@@ -245,7 +240,7 @@ export default defineComponent({
     v-on:change="changeColorsCo"
   />
   <span> selected: {{ selectedColorIndex }} </span>
-  <button v-on:click="reorder([0,1,2,5,4,3,9,8,7,6])">mirror hue</button> 
+  <button v-on:click="reorder([0,1,2,5,4,3,9,8,7,6])">mirror hue</button>
   <div class="wheel">
     <div
       v-for="(v,i) in colors.slice(3)"
