@@ -12,6 +12,8 @@ export type ColorPalette = [
   Color,
 ];
 
+export const colorPaletteRegex = /([0-9a-fA-F]{6}-){8}[0-9a-fA-F]{6}/;
+
 const base24Digits = [
   'base00',
   'base01',
@@ -31,7 +33,7 @@ const base24Digits = [
   'base0F',
 ];
 
-export function getColorsFromSchemeObj(schemeObj: Dictionary<string>) {
+export function getColors16FromSchemeObj(schemeObj: Dictionary<string>) {
   const colors16 = _.map(base24Digits, (v,k) => {
     const colorStr = schemeObj.default[v];
     if (colorStr[0] === '#') {
