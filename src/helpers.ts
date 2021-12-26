@@ -1,5 +1,6 @@
 import Color from 'color';
 import _, { Dictionary } from 'lodash';
+
 export type ColorPalette = [
   Color,
   Color,
@@ -11,7 +12,6 @@ export type ColorPalette = [
   Color,
   Color,
 ];
-
 
 const base24Digits = [
   'base00',
@@ -32,8 +32,8 @@ const base24Digits = [
   'base0F',
 ];
 
-export function getColors16FromSchemeObj(schemeObj: Dictionary<string>) {
-  const colors16 = _.map(base24Digits, (v,k) => {
+export function getColors16FromSchemeObj(schemeObj: Dictionary<any>) {
+  const colors16 = _.map(base24Digits, (v, k) => {
     const colorStr = schemeObj.default[v];
     if (colorStr[0] === '#') {
       return Color(colorStr);

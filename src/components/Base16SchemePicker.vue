@@ -7,7 +7,7 @@
 </template>
 <script setup lang="ts">
 import {
-  defineEmits, inject, Ref, ref, watch,
+  inject, Ref, ref, watch,
 } from 'vue';
 import _ from 'lodash';
 import { useMessage } from 'naive-ui';

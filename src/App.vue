@@ -17,9 +17,12 @@
             bordered
           >
             <color-palette/>
-            <base-16-scheme-picker @update="tmp"/>
+            <base-16-scheme-picker/>
             <import/>
           </n-layout-sider>
+          <n-layout-content>
+            <router-view/>
+          </n-layout-content>
         </n-layout>
       </n-layout-content>
     </n-layout>
@@ -58,8 +61,7 @@ const menuOptions = [
 ];
 const activeKey = ref(null);
 provide('colors', colors);
-function tmp(x: Base16Scheme) { colors.value = x.colors; }
 
-window.Color = Color;
-window.colors = colors;
+// window['Color'] = Color;
+// window['colors'] = colors;
 </script>

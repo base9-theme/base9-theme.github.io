@@ -20,6 +20,6 @@ watch(colors, colorsNew => {
 });
 const colorsHexView = _.times(9, (i: number) => computed({
   get: () => colors.value[i].hex(),
-  set: (s: string) => { colors.value[i] = Color(s); colors.value=colors.value.slice(); },
+  set: (s: string) => { colors.value[i] = Color(s); colors.value=colors.value.slice() as ColorPalette; },
 }));
 </script>

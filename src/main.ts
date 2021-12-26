@@ -1,14 +1,11 @@
 import { createApp } from 'vue';
-import {
-  // create naive ui
-  create,
-  // component
-  NButton,
-} from 'naive-ui';
+import { create } from 'naive-ui';
+import router from './router';
 import App from './App.vue';
 
-const naive = create({
-  components: [NButton],
-});
+const naive = create();
 
-createApp(App).use(naive).mount('#app');
+createApp(App)
+  .use(naive)
+  .use(router)
+  .mount('#app');
