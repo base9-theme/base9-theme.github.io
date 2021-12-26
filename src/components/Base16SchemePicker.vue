@@ -1,14 +1,20 @@
 <template>
-<n-dropdown @select="handleSelect" trigger="click" :options="options">
-  <n-button quaternary type="primary">Import Base16 Scheme</n-button>
-</n-dropdown>
+<n-select
+  :value="value"
+  @update:value="updateValue"
+  placeholder="Custom"
+  :options="options"/>
 </template>
 <script setup lang="ts">
-import { defineEmits } from 'vue';
+import {
+  defineEmits, inject, Ref, ref, watch,
+} from 'vue';
 import _ from 'lodash';
-import { ColorPalette, getColorsFromBase16, getColors16FromSchemeObj } from '../helpers';
-import { useMessage } from 'naive-ui'
+import { useMessage } from 'naive-ui';
 import Color from 'color';
+import a from 'naive-ui/lib/typography/src/a';
+import { ColorPalette, getColorsFromBase16, getColors16FromSchemeObj, toColorsString } from '../helpers';
+
 const message = useMessage();
 
 type Base16Scheme = {
@@ -18,22 +24,36 @@ type Base16Scheme = {
 }
 
 const schemesRaw = import.meta.globEager('../assets/schemes-base16/*.yaml');
-const options = _.entries(schemesRaw).map(([k, v]) => {
+const options = _.entries(schemesRaw).map(([k, v], i) => {
   const key = ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k) || [])[1]);
   const colors16 = getColors16FromSchemeObj(v);
   return {
     label: key,
-    key: {
+    value: i,
+    data: {
       name: key,
       colors16,
       colors: getColorsFromBase16(colors16),
-    }
+    },
+  };
+});
+const value = ref<null|number>(null);
+const colors = inject('colors') as Ref<ColorPalette>;
+
+watch(colors, (newColors: ColorPalette) => {
+  const valueRaw = value.value;
+  if (valueRaw !== null
+  && toColorsString(newColors) !== toColorsString(options[valueRaw].data.colors)) {
+    value.value = null;
   }
 });
-const a = defineEmits<{(e: 'update', value: Base16Scheme): void
-}>();
-function handleSelect(key: Base16Scheme) {
-  a('update', key);
-  message.success("Imported: " + key.name);
+
+function updateValue(newValue: number|null) {
+  value.value = newValue;
+  if (newValue !== null) {
+    const option = options[newValue];
+    colors.value = option.data.colors.slice() as ColorPalette;
+    message.success(`Imported: ${option.label}`);
+  }
 }
 </script>
