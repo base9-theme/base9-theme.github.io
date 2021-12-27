@@ -15,13 +15,12 @@
             show-trigger="arrow-circle"
             content-style="padding: 24px;"
             bordered
-          >
-            <color-palette/>
+          > <color-palette/>
             <base-16-scheme-picker/>
             <import/>
           </n-layout-sider>
           <n-layout-content>
-            <router-view/>
+            <router-view  v-bind:style="cssVariable"/>
           </n-layout-content>
         </n-layout>
       </n-layout-content>
@@ -38,29 +37,46 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import { provide, ref } from 'vue';
+import {
+  computed, h, provide, Ref, ref,
+} from 'vue';
 // import Main from './components/Main.vue'
+import Color from 'color';
+import _ from 'lodash';
+import { RouterLink } from 'vue-router';
 import Main from './components/Main2.vue';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import ColorPalette from './components/ColorPalette.vue';
 import Import from './components/Import.vue';
-import Color from 'color'
-import _ from 'lodash'
+import { getCssVariableName } from './helpers';
 
 const defaultColorsInput = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
 const colors = ref(_.map(defaultColorsInput.split('-'), (s) => Color(`#${s}`)));
-const menuOptions = [
+const menuRaw = [
   {
     label: 'tmp1',
-    key: 'tmp1',
+    path: '/',
   },
   {
     label: 'tmp2',
-    key: 'tmp2',
+    path: '/export',
   },
 ];
+const menuOptions = _.map(menuRaw, ({ label, path }) => ({
+  label: () => h(
+    RouterLink,
+    {
+      to: { path },
+    },
+    { default: () => label },
+  ),
+  key: label,
+}));
 const activeKey = ref(null);
 provide('colors', colors);
+const cssVariable = computed(() => Object.fromEntries(
+  _.map(colors.value, (c, i) => [getCssVariableName(i), c.hex()]),
+));
 
 // window['Color'] = Color;
 // window['colors'] = colors;

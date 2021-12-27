@@ -2,7 +2,7 @@
 <n-select
   :value="value"
   @update:value="updateValue"
-  placeholder="Custom"
+  placeholder="Import from Base16"
   :options="options"/>
 </template>
 <script setup lang="ts">

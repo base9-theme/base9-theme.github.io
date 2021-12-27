@@ -31,6 +31,9 @@ const base24Digits = [
   'base0E',
   'base0F',
 ];
+export function getCssVariableName(i: number) {
+  return `--base9-${i}`;
+}
 
 export function getColors16FromSchemeObj(schemeObj: Dictionary<any>) {
   const colors16 = _.map(base24Digits, (v, k) => {

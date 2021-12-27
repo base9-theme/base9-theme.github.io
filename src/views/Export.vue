@@ -1,9 +1,8 @@
 <template>
-  Hellow Preview!
+  Export
 </template>
 
 <script setup>
-
 </script>
 
 <style>
