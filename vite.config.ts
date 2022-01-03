@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import content from '@originjs/vite-plugin-content';
+import rawPlugin from 'vite-raw-plugin';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
@@ -22,6 +23,7 @@ export default defineConfig({
   plugins: [
     vue(),
     content(),
+    rawPlugin({fileRegex: /\.mustache$/}),
     AutoImport({
       resolvers: [NaiveUiResolver()],
     }),

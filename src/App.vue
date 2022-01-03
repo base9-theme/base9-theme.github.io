@@ -1,5 +1,6 @@
 <template>
 <n-theme-editor>
+  <n-config-provider :hljs="hljs">
   <n-message-provider>
     <n-layout>
       <n-layout-header bordered style="display: flex; height: 64px; align-items: center;">
@@ -30,6 +31,7 @@
     </n-button-group> -->
     </div>
   </n-message-provider>
+  </n-config-provider>
 </n-theme-editor>
 </template>
 <style>
@@ -40,11 +42,11 @@
 import {
   computed, h, provide, Ref, ref,
 } from 'vue';
-// import Main from './components/Main.vue'
+import hljs from 'highlight.js/lib/core'
 import Color from 'color';
 import _ from 'lodash';
 import { RouterLink } from 'vue-router';
-import Main from './components/Main2.vue';
+// import Main from './components/Main2.vue';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import ColorPalette from './components/ColorPalette.vue';
 import Import from './components/Import.vue';
@@ -54,11 +56,11 @@ const defaultColorsInput = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd9
 const colors = ref(_.map(defaultColorsInput.split('-'), (s) => Color(`#${s}`)));
 const menuRaw = [
   {
-    label: 'tmp1',
+    label: 'Preview',
     path: '/',
   },
   {
-    label: 'tmp2',
+    label: 'Export',
     path: '/export',
   },
 ];
