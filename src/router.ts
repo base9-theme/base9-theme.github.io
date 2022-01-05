@@ -1,12 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Preview from './views/Preview.vue';
 import Export from './views/Export.vue';
+import About from './views/About.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Preview,
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: About,
   },
   {
     path: '/export',

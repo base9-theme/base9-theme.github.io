@@ -4,6 +4,8 @@
   <n-message-provider>
     <n-layout>
       <n-layout-header bordered style="display: flex; height: 64px; align-items: center;">
+        <logo :size="32" :colors="colors"/>
+        <!-- <span style="width: 32px; height: 32px;" v-html="svgString"></span> -->
         <span style="font-size: 32px">Base9</span>
         <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
       </n-layout-header>
@@ -50,11 +52,17 @@ import { RouterLink } from 'vue-router';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import ColorPalette from './components/ColorPalette.vue';
 import Import from './components/Import.vue';
-import { getCssVariableName } from './helpers';
+import Logo from './components/Logo.vue'
+import { getCssVariableName, renderWithSemantic } from './helpers';
+import logoTemplate from './assets/templates/logo.svg.mustache';
 
 const defaultColorsInput = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
 const colors = ref(_.map(defaultColorsInput.split('-'), (s) => Color(`#${s}`)));
 const menuRaw = [
+  {
+    label: 'About',
+    path: '/about',
+  },
   {
     label: 'Preview',
     path: '/',
@@ -76,10 +84,12 @@ const menuOptions = _.map(menuRaw, ({ label, path }) => ({
 }));
 const activeKey = ref(null);
 provide('colors', colors);
+const svgString = computed(() => renderWithSemantic(logoTemplate, colors.value));
 const cssVariable = computed(() => Object.fromEntries(
   _.map(colors.value, (c, i) => [getCssVariableName(i), c.hex()]),
 ));
 
 // window['Color'] = Color;
 // window['colors'] = colors;
+// `<path fill="#0F0" d="M${a1} 0H${a0-a1}C${a0-a2} 0 ${a0} ${a2} ${a0} ${a1}V${a0-a1}C${a0} ${a0-a2} ${a0-a2} ${a0} ${a0-a1} ${a0}H${a1}C${a2} ${a0} 0 ${a0-a2} 0 ${a0-a1}V${a1}C0 ${a2} ${a2} 0 ${a1} 0 z" />`
 </script>

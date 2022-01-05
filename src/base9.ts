@@ -1,5 +1,4 @@
 import Color from 'color';
-import { PRIORITY_BELOW_NORMAL, SSL_OP_PKCS1_CHECK_1 } from 'constants';
 import _ from 'lodash';
 import Mustache from 'mustache';
 

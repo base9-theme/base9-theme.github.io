@@ -3,17 +3,22 @@
   :value="value"
   @update:value="updateValue"
   placeholder="Import from Base16"
+  :render-label="renderLabel"
+  filterable
   :options="options"/>
 </template>
 <script setup lang="ts">
 import {
+  h,
   inject, Ref, ref, watch,
 } from 'vue';
 import _ from 'lodash';
-import { useMessage } from 'naive-ui';
+import { NIcon, useMessage } from 'naive-ui';
 import Color from 'color';
-import a from 'naive-ui/lib/typography/src/a';
-import { ColorPalette, getColorsFromBase16, getColors16FromSchemeObj, toColorsString } from '../helpers';
+import Logo from './Logo.vue';
+import {
+  ColorPalette, getColorsFromBase16, getColors16FromSchemeObj, toColorsString, renderWithSemantic,
+} from '../helpers';
 
 const message = useMessage();
 
@@ -37,6 +42,25 @@ const options = _.entries(schemesRaw).map(([k, v], i) => {
     },
   };
 });
+const renderLabel = function (option: typeof options[number]) {
+  return [
+    h(
+      NIcon,
+      {
+        style: {
+          verticalAlign: 'middle',
+          marginRight: '4px',
+        },
+      },
+      {
+        default: () => h(Logo, {
+          colors: option.data.colors,
+        }),
+      },
+    ),
+    option.label,
+  ];
+};
 const value = ref<null|number>(null);
 const colors = inject('colors') as Ref<ColorPalette>;
 

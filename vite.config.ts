@@ -23,7 +23,7 @@ export default defineConfig({
   plugins: [
     vue(),
     content(),
-    rawPlugin({fileRegex: /\.mustache$/}),
+    rawPlugin({ fileRegex: /\.(mustache|md)$/ }),
     AutoImport({
       resolvers: [NaiveUiResolver()],
     }),
