@@ -76,7 +76,8 @@ import { render } from '../template';
 import semanticRaw from '../assets/semantic.yaml';
 import terminalrcRaw from '../assets/templates/terminalrc.mustache?raw';
 import base24Raw from '../assets/templates/base24.mustache?raw';
-import { getCssVariableName, ColorPalette } from '../helpers';
+import { getCssVariableName } from '../helpers';
+import type { ColorPalette } from '../helpers';
 
 const N = 9;
 

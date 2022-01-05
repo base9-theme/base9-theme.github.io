@@ -22,7 +22,8 @@ import {
 } from 'vue';
 import { render } from '../base9';
 import semantic from '../assets/semantic.yaml';
-import { ColorPalette, renderWithSemantic } from '../helpers';
+import { renderWithSemantic } from '../helpers';
+import type { ColorPalette } from '../helpers';
 
 const templateRaw = import.meta.globEager('../assets/templates/*.mustache');
 const templateObj: Dictionary<string> = Object.fromEntries(_.entries(templateRaw).map(([k, v]) => ([

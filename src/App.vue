@@ -44,20 +44,20 @@
 import {
   computed, h, provide, Ref, ref,
 } from 'vue';
-import hljs from 'highlight.js/lib/core'
+import hljs from 'highlight.js/lib/core';
 import Color from 'color';
 import _ from 'lodash';
 import { RouterLink } from 'vue-router';
 // import Main from './components/Main2.vue';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
-import ColorPalette from './components/ColorPalette.vue';
 import Import from './components/Import.vue';
-import Logo from './components/Logo.vue'
+import Logo from './components/Logo.vue';
 import { getCssVariableName, renderWithSemantic } from './helpers';
+import type { ColorPalette } from './helpers';
 import logoTemplate from './assets/templates/logo.svg.mustache';
 
 const defaultColorsInput = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
-const colors = ref(_.map(defaultColorsInput.split('-'), (s) => Color(`#${s}`)));
+const colors = ref(_.map(defaultColorsInput.split('-'), (s) => Color(`#${s}`)) as ColorPalette);
 const menuRaw = [
   {
     label: 'About',

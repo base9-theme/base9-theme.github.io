@@ -17,16 +17,11 @@ import { NIcon, useMessage } from 'naive-ui';
 import Color from 'color';
 import Logo from './Logo.vue';
 import {
-  ColorPalette, getColorsFromBase16, getColors16FromSchemeObj, toColorsString, renderWithSemantic,
+  getColorsFromBase16, getColors16FromSchemeObj, toColorsString,
 } from '../helpers';
+import type { ColorPalette } from '../helpers';
 
 const message = useMessage();
-
-type Base16Scheme = {
-  name: string,
-  colors16: Color[],
-  colors: ColorPalette,
-}
 
 const schemesRaw = import.meta.globEager('../assets/schemes-base16/*.yaml');
 const options = _.entries(schemesRaw).map(([k, v], i) => {

@@ -15,7 +15,8 @@ import _ from 'lodash';
 import { ContentCopySharp } from '@vicons/material';
 import { useMessage } from 'naive-ui';
 import Color from 'color';
-import { ColorPalette, toColorsString } from '../helpers';
+import { toColorsString } from '../helpers';
+import type { ColorPalette } from '../helpers';
 
 
 const message = useMessage();

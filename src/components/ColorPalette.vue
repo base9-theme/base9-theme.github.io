@@ -12,7 +12,7 @@
 import { inject, computed, Ref, toRef, triggerRef, watch } from 'vue';
 import Color from 'color';
 import _ from 'lodash';
-import { ColorPalette } from '../helpers';
+import type { ColorPalette } from '../helpers';
 
 const colors = inject('colors') as Ref<ColorPalette>;
 watch(colors, colorsNew => {

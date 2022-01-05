@@ -3,7 +3,7 @@ import _, { Dictionary } from 'lodash';
 import { render } from './base9';
 import semantic from './assets/semantic.yaml';
 
-export type ColorPalette = [
+type ColorPalette = [
   Color,
   Color,
   Color,
@@ -14,6 +14,7 @@ export type ColorPalette = [
   Color,
   Color,
 ];
+export type { ColorPalette };
 
 const base24Digits = [
   'base00',
