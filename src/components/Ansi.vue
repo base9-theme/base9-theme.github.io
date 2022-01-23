@@ -1,32 +1,28 @@
 <script lang="ts">
-import { defineComponent, ref, VueElement, PropType } from 'vue'
+import {
+  defineComponent, PropType,
+} from 'vue';
 
 // import tmp from '..assets'
-import yaml from 'js-yaml'
-import Color from 'color'
-import _ from 'lodash'
-// import {getNamedColors} from '../colors';
-import {getNamedColors} from '../base9';
-import {render} from '../template';
-import semanticRaw from '../assets/semantic.yaml?raw';
+import Color from 'color';
 
 export default defineComponent({
   props: {
-      colors: Array as PropType<Array<Color>>
+    colors: Array as PropType<Array<Color>>,
   },
 });
 </script>
 <template>
-<div class="ansi-list">
+  <div class="ansi-list">
     <div
-        class="ansi-cell"
-        :style="{ background: c.hex(), color: 'white'}"
-        v-for="(c, i) in colors"
-        v-bind:key="i"
+      class="ansi-cell"
+      :style="{ background: c.hex(), color: 'white' }"
+      v-for="(c, i) in colors"
+      v-bind:key="i"
     >
-        {{c.hex()}}
+      {{ c.hex() }}
     </div>
-</div>
+  </div>
 </template>
 <style scoped>
 .ansi-list {

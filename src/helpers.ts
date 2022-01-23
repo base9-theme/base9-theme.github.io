@@ -1,6 +1,6 @@
 import Color from 'color';
 import _, { Dictionary } from 'lodash';
-import { render } from './base9';
+import { render } from 'base9-core';
 import semantic from './assets/semantic.yaml';
 
 type ColorPalette = [
@@ -68,5 +68,5 @@ export function getColorsFromBase16(colors: Color[]): ColorPalette {
 }
 
 export function renderWithSemantic(template: string, colors: ColorPalette) {
-  return render(template, colors, semantic);
+  return render(template, colors);
 }

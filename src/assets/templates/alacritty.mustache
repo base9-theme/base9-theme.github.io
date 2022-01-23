@@ -2,34 +2,34 @@
 colors:
   # Default colors
   primary:
-    background: '0x{{base00-hex}}'
-    foreground: '0x{{base05-hex}}'
+    background: '0x{{background.o.hex}}'
+    foreground: '0x{{foreground.o.hex}}'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: '0x{{base00-hex}}'
-    cursor: '0x{{base05-hex}}'
+    text: '0x{{background.o.hex}}'
+    cursor: '0x{{foreground.o.hex}}'
 
   # Normal colors
   normal:
-    black:   '0x{{base00-hex}}'
-    red:     '0x{{base08-hex}}'
-    green:   '0x{{base0B-hex}}'
-    yellow:  '0x{{base0A-hex}}'
-    blue:    '0x{{base0D-hex}}'
-    magenta: '0x{{base0E-hex}}'
-    cyan:    '0x{{base0C-hex}}'
-    white:   '0x{{base05-hex}}'
+    black:   '0x{{ansi.black.hex}}'
+    red:     '0x{{ansi.red.hex}}'
+    green:   '0x{{ansi.green.hex}}'
+    yellow:  '0x{{ansi.yellow.hex}}'
+    blue:    '0x{{ansi.blue.hex}}'
+    magenta: '0x{{ansi.magenta.hex}}'
+    cyan:    '0x{{ansi.cyan.hex}}'
+    white:   '0x{{ansi.white.hex}}'
 
   # Bright colors
   bright:
-    black:   '0x{{base03-hex}}'
-    red:     '0x{{base09-hex}}'
-    green:   '0x{{base01-hex}}'
-    yellow:  '0x{{base02-hex}}'
-    blue:    '0x{{base04-hex}}'
-    magenta: '0x{{base06-hex}}'
-    cyan:    '0x{{base0F-hex}}'
-    white:   '0x{{base07-hex}}'
+    black:   '0x{{ansi.bright_black.hex}}'
+    red:     '0x{{ansi.bright_red.hex}}'
+    green:   '0x{{ansi.bright_green.hex}}'
+    yellow:  '0x{{ansi.bright_yellow.hex}}'
+    blue:    '0x{{ansi.bright_blue.hex}}'
+    magenta: '0x{{ansi.bright_magenta.hex}}'
+    cyan:    '0x{{ansi.bright_cyan.hex}}'
+    white:   '0x{{ansi.bright_white.hex}}'
 
 draw_bold_text_with_bright_colors: false
