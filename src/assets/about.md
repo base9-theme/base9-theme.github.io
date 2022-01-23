@@ -18,6 +18,8 @@ It also has a very fragmented community. Since every implementation of base16
 is in it's own repository with its owner, it's very hard to make changes across
 all of them.
 
+Base9 aims to fix them while provide more improvements.
+
 ### Less but more choices
 A base9 theme plugin for any program does not contain bloats for hundreds of
 color combinations. Instead, it allows user to pick its own colors and apply
@@ -40,8 +42,7 @@ button color, you have make your error message non red as well.
 In base9, you only specify relative colors, and it will pick the most red color
 as red and the most green color as green, and apply them in appropriate places.
 
-### Better ANSI Color
-Base16 does not differentiate bright vs normal ANSI color, while base9 supports
+### Better ANSI Color Base16 does not differentiate bright vs normal ANSI color, while base9 supports
 it via brighter shades of the colors.
 
 Base16 also overrides the first 6 colors of ANSI 256, which could break other
