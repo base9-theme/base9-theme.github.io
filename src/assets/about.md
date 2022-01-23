@@ -5,10 +5,11 @@ Base9 provides a website for designing the color palette and tools for applying
 it to your favorate program. It is inspired by Base16.
 
 ## How to use the website.
-1. Pick your favorate color on the left.
-2. Preview the colors in preview tab on the top.
-3. Go to Export tab and select your favorate program.
-4. Copy the color theme into your program setting.
+* Pick your favorate color on the left.
+* Preview the colors in preview tab on the top.
+* Apply the colors to your favorate program in one of two ways.
+    * Go to Export tab and select the program and copy/paste the settings.
+    * Copy the 62 char long string on the left into your program's base9 setting.
 
 ## How its different from Base16
 
@@ -42,7 +43,8 @@ button color, you have make your error message non red as well.
 In base9, you only specify relative colors, and it will pick the most red color
 as red and the most green color as green, and apply them in appropriate places.
 
-### Better ANSI Color Base16 does not differentiate bright vs normal ANSI color, while base9 supports
+### Better ANSI Color
+Base16 does not differentiate bright vs normal ANSI color, while base9 supports
 it via brighter shades of the colors.
 
 Base16 also overrides the first 6 colors of ANSI 256, which could break other
