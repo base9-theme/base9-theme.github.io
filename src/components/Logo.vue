@@ -5,13 +5,14 @@
 
 </style>
 <script setup lang="ts">
-import { renderWithSemantic } from '../helpers';
-import type { ColorPalette } from '../helpers';
+import { defineProps } from 'vue';
+import { render } from 'base9-core';
+import type { ColorPalette } from '../base9-core';
 import logoTemplate from '../assets/templates/logo.svg.mustache';
 
 const props = defineProps<{
     colors: ColorPalette,
     size?: number|string,
 }>();
-const content = renderWithSemantic(logoTemplate, props.colors);
+const content = render(logoTemplate, props.colors);
 </script>

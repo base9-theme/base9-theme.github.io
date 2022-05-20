@@ -14,12 +14,12 @@ import {
 } from 'vue';
 import _ from 'lodash';
 import { NIcon, useMessage } from 'naive-ui';
-import Color from 'color';
 import Logo from './Logo.vue';
 import {
-  getColorsFromBase16, getColors16FromSchemeObj, toColorsString,
+  getColorsFromBase16, getColors16FromSchemeObj,
 } from '../helpers';
-import type { ColorPalette } from '../helpers';
+import type { ColorPalette } from '../base9-core';
+import { toPaletteString } from '../base9-core';
 
 const message = useMessage();
 
@@ -62,7 +62,7 @@ const colors = inject('colors') as Ref<ColorPalette>;
 watch(colors, (newColors: ColorPalette) => {
   const valueRaw = value.value;
   if (valueRaw !== null
-  && toColorsString(newColors) !== toColorsString(options[valueRaw].data.colors)) {
+  && toPaletteString(newColors) !== toPaletteString(options[valueRaw].data.colors)) {
     value.value = null;
   }
 });

@@ -10,11 +10,11 @@
 </template>
 <script setup lang="ts">
 import {
-  inject, computed, Ref, toRef, triggerRef, watch,
+  inject, computed, Ref,
 } from 'vue';
 import Color from 'color';
 import _ from 'lodash';
-import type { ColorPalette } from '../helpers';
+import type { ColorPalette } from '../base9-core';
 
 const colors = inject('colors') as Ref<ColorPalette>;
 const colorsHexView = _.times(9, (i: number) => computed({

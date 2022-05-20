@@ -9,26 +9,24 @@
 
 <script setup lang="ts">
 import {
-  defineProps, ref, watch, computed, defineEmits, Ref, inject,
+  ref, watch, computed, Ref, inject,
 } from 'vue';
 import _ from 'lodash';
 import { ContentCopySharp } from '@vicons/material';
 import { useMessage } from 'naive-ui';
 import Color from 'color';
-import { toColorsString } from '../helpers';
 import type { ColorPalette } from '../base9-core';
-import { PALETTE_REGEX } from '../base9-core';
-
+import { toPaletteString, PALETTE_REGEX } from '../base9-core';
 
 const message = useMessage();
 const placeholder = '111111-222222-333333-444444-555555-666666-777777-888888-999999';
 
 const colors = inject('colors') as Ref<ColorPalette>;
-const input = ref(toColorsString(colors.value));
+const input = ref(toPaletteString(colors.value));
 const valid = computed(() => PALETTE_REGEX.test(input.value));
 
 watch(colors, (colorsNew) => {
-  input.value = toColorsString(colorsNew);
+  input.value = toPaletteString(colorsNew);
 });
 
 function copy() {

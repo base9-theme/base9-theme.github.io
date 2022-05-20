@@ -53,10 +53,11 @@ import {
 import type { RouteLocation } from 'vue-router';
 
 // import Main from './components/Main2.vue';
+import { render } from 'base9-core';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import Import from './components/Import.vue';
 import Logo from './components/Logo.vue';
-import { getCssVariableName, renderWithSemantic } from './helpers';
+import { getCssVariableName } from './helpers';
 import type { ColorPalette } from './base9-core';
 import { toPaletteString, PALETTE_REGEX } from './base9-core';
 import logoTemplate from './assets/templates/logo.svg.mustache';
@@ -78,7 +79,8 @@ function hasBase9Param(r: RouteLocation) {
 
 router.beforeEach((to, from, next) => {
   if (!hasBase9Param(to) && hasBase9Param(from)) {
-    next({ name: to.name, query: from.query });
+    // TODO remove "!"
+    next({ name: to.name!, query: from.query });
   } else {
     next();
   }
@@ -132,7 +134,7 @@ const menuOptions = _.map(menuRaw, ({ label, path }) => ({
 }));
 const activeKey = ref(null);
 provide('colors', colors);
-const svgString = computed(() => renderWithSemantic(logoTemplate, colors.value));
+const svgString = computed(() => render(logoTemplate, colors.value));
 const cssVariable = computed(() => Object.fromEntries(
   _.map(colors.value, (c, i) => [getCssVariableName(i), c.hex()]),
 ));

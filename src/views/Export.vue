@@ -20,10 +20,9 @@ import _, { Dictionary } from 'lodash';
 import {
   computed, inject, Ref, ref,
 } from 'vue';
-import { render } from '../base9';
+import { render } from 'base9-core';
 import semantic from '../assets/semantic.yaml';
-import { renderWithSemantic } from '../helpers';
-import type { ColorPalette } from '../helpers';
+import type { ColorPalette } from '../base9-core';
 
 const templateRaw = import.meta.globEager('../assets/templates/*.mustache');
 const templateObj: Dictionary<string> = Object.fromEntries(_.entries(templateRaw).map(([k, v]) => ([
@@ -39,8 +38,9 @@ const content = computed(() => {
     return null;
   }
   const template = templateObj[value.value];
-  return renderWithSemantic(template, colors.value);
+  return render(template, colors.value);
 });
+
 const options = _.map(templateObj, (v, k) => ({
   label: k,
   value: k,

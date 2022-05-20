@@ -1,7 +1,7 @@
 import Color from 'color';
 import _, { Dictionary } from 'lodash';
 import { render } from 'base9-core';
-import semantic from './assets/semantic.yaml';
+import type { ColorPalette } from './base9-core';
 
 const base24Digits = [
   'base00',
@@ -36,10 +36,6 @@ export function getColors16FromSchemeObj(schemeObj: Dictionary<any>) {
   return colors16;
 }
 
-export function toColorsString(colors: ColorPalette) {
-  return _.map(colors, (c) => c.hex().toString().substring(1)).join('-');
-}
-
 export function getColorsFromBase16(colors: Color[]): ColorPalette {
   return [
     colors[0],
@@ -52,8 +48,4 @@ export function getColorsFromBase16(colors: Color[]): ColorPalette {
     colors[13],
     colors[14],
   ];
-}
-
-export function renderWithSemantic(template: string, colors: ColorPalette) {
-  return render(template, colors);
 }

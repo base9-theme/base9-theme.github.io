@@ -10,8 +10,8 @@
       <div
         class="preview-cell"
         :style="{
-          background: namedColors.background.o.color.hex(),
-          color: namedColors.c0.o.color.hex(),
+          background: (namedColors as any).background.o.color.hex(),
+          color: (namedColors as any).c0.o.color.hex(),
         }"
         v-for="([s], i) in previewListColumns"
         v-bind:key="i"
@@ -68,17 +68,10 @@ import _ from 'lodash';
 // import Ansi from './Ansi.vue';
 
 // import tmp from '..assets'
-import { getNamedColors, render, NamedColors } from 'base9-core';
+import { getNamedColors } from 'base9-core';
 
-// @ts-ignore
-import terminalrcRaw from '../assets/templates/terminalrc.mustache?raw';
-import base24Raw from '../assets/templates/base24.mustache?raw';
-import { getCssVariableName } from '../helpers';
-import type { ColorPalette } from '../helpers';
+import type { ColorPalette } from '../base9-core';
 
-const N = 9;
-
-const contrastIndex = [1, 0, 0, 0, 0, 0, 0, 0, 0];
 const previewListRows = '01234567';
 const previewListColumns: [
   string,
@@ -119,7 +112,11 @@ const previewList = computed(() => _.flatMap(previewListRows.split(''), (c) => _
 function previewNumber(bg: Color, fg: Color) {
   return fg.contrast(bg);
 }
-const ansiList = computed(() => _.times(16, (x) => (namedColors.value.ansi as any)[x.toString(16)].color));
+
+const ansiList = computed(() => _.times(
+  16,
+  (x) => (namedColors.value.ansi as any)[x.toString(16)].color,
+));
 const ansiLabel = [
   'Black',
   'Red',
