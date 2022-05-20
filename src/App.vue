@@ -42,22 +42,70 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import {
-  computed, h, provide, Ref, ref,
+  computed, h, provide, Ref, ref, watch,
 } from 'vue';
 import hljs from 'highlight.js/lib/core';
 import Color from 'color';
-import _ from 'lodash';
-import { RouterLink } from 'vue-router';
+import _, { isArray } from 'lodash';
+import {
+  useRoute, useRouter, RouterLink,
+} from 'vue-router';
+import type { RouteLocation } from 'vue-router';
+
 // import Main from './components/Main2.vue';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import Import from './components/Import.vue';
 import Logo from './components/Logo.vue';
 import { getCssVariableName, renderWithSemantic } from './helpers';
-import type { ColorPalette } from './helpers';
+import type { ColorPalette } from './base9-core';
+import { toPaletteString, PALETTE_REGEX } from './base9-core';
 import logoTemplate from './assets/templates/logo.svg.mustache';
 
-const defaultColorsInput = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
-const colors = ref(_.map(defaultColorsInput.split('-'), (s) => Color(`#${s}`)) as ColorPalette);
+const route = useRoute();
+const router = useRouter();
+const DEFAULT_PALETTE = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
+function getDefaultPalette() {
+  const palette = route.params.base9;
+  if (typeof palette !== 'string' || !PALETTE_REGEX.test(palette)) {
+    return DEFAULT_PALETTE;
+  }
+  return palette;
+}
+
+function hasBase9Param(r: RouteLocation) {
+  return r.query.base9 !== undefined;
+}
+
+router.beforeEach((to, from, next) => {
+  if (!hasBase9Param(to) && hasBase9Param(from)) {
+    next({ name: to.name, query: from.query });
+  } else {
+    next();
+  }
+});
+
+const colors = ref(_.map(getDefaultPalette().split('-'), (s) => Color(`#${s}`)) as ColorPalette);
+
+watch(
+  () => route.query.base9,
+  (palette) => {
+    if (typeof palette !== 'string') {
+      return;
+    }
+    const newColors = _.map(palette.split('-'), (s) => Color(`#${s}`)) as ColorPalette;
+    colors.value = newColors;
+  },
+);
+
+watch(colors, async (colorsNew) => {
+  const paletteString = toPaletteString(colorsNew);
+  if (!paletteString) {
+    return;
+  }
+  await router.replace({
+    query: { base9: paletteString },
+  });
+});
 const menuRaw = [
   {
     label: 'About',

@@ -3,19 +3,6 @@ import _, { Dictionary } from 'lodash';
 import { render } from 'base9-core';
 import semantic from './assets/semantic.yaml';
 
-type ColorPalette = [
-  Color,
-  Color,
-  Color,
-  Color,
-  Color,
-  Color,
-  Color,
-  Color,
-  Color,
-];
-export type { ColorPalette };
-
 const base24Digits = [
   'base00',
   'base01',
