@@ -18,8 +18,8 @@ import Logo from './Logo.vue';
 import {
   getColorsFromBase16, getColors16FromSchemeObj,
 } from '../helpers';
-import type { ColorPalette } from '../base9-core';
-import { toPaletteString } from '../base9-core';
+import type { ColorPalette } from '../base9-core/index';
+import { toPaletteString } from '../base9-core/index';
 
 const message = useMessage();
 

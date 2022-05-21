@@ -15,8 +15,8 @@ import _ from 'lodash';
 import { ContentCopySharp } from '@vicons/material';
 import { useMessage } from 'naive-ui';
 import Color from 'color';
-import type { ColorPalette } from '../base9-core';
-import { toPaletteString, PALETTE_REGEX } from '../base9-core';
+import type { ColorPalette } from '../base9-core/index';
+import { toPaletteString, PALETTE_REGEX } from '../base9-core/index';
 
 const message = useMessage();
 const placeholder = '111111-222222-333333-444444-555555-666666-777777-888888-999999';

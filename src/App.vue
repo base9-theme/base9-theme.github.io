@@ -53,13 +53,12 @@ import {
 import type { RouteLocation } from 'vue-router';
 
 // import Main from './components/Main2.vue';
-import { render } from 'base9-core';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import Import from './components/Import.vue';
 import Logo from './components/Logo.vue';
 import { getCssVariableName } from './helpers';
-import type { ColorPalette } from './base9-core';
-import { toPaletteString, PALETTE_REGEX } from './base9-core';
+import type { ColorPalette } from './base9-core/index';
+import { render, toPaletteString, PALETTE_REGEX } from './base9-core/index';
 import logoTemplate from './assets/templates/logo.svg.mustache';
 
 const route = useRoute();

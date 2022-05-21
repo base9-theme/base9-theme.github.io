@@ -68,9 +68,9 @@ import _ from 'lodash';
 // import Ansi from './Ansi.vue';
 
 // import tmp from '..assets'
-import { getNamedColors } from 'base9-core';
+import { getNamedColors } from '../base9-core/index';
 
-import type { ColorPalette } from '../base9-core';
+import type { ColorPalette } from '../base9-core/index';
 
 const previewListRows = '01234567';
 const previewListColumns: [
