@@ -1,9 +1,9 @@
 import Color from 'color';
-import _, { Dictionary } from 'lodash';
+import _, { Dictionary, isString } from 'lodash';
 import Mustache from 'mustache';
 import { rgb, xyz } from 'color-convert';
 import type { RGB } from 'color-convert/conversions';
-import semantic from './semantic';
+import semantic2 from './semantic2';
 
 /** List of 9 colors */
 export type ColorPalette = [
@@ -27,8 +27,6 @@ function mixRaw(a: number, b: number, ratio: number) {
   return a * (1 - ratio) + b * ratio;
 }
 
-type ColorModel = 'rgb'|'lab';
-
 function customMix(c1: Color, c2: Color, ratio: number) {
   const c1xyz = rgb.xyz(c1.rgb().array() as RGB);
   const c2xyz = rgb.xyz(c2.rgb().array() as RGB);
@@ -38,7 +36,7 @@ function customMix(c1: Color, c2: Color, ratio: number) {
   const c1contrast = Math.log(c1xyz[1] + 5);
   const c2contrast = Math.log(c2xyz[1] + 5);
   const c3contrast = mixRaw(c1contrast, c2contrast, ratio);
-  const c3y = Math.exp(c3contrast) - 5;
+  const c3y = _.clamp(Math.exp(c3contrast) - 5, 0, 100);
   const c3l = xyz.lab([0, c3y, 0])[0];
   const c3lab = [
     c3l,
@@ -148,21 +146,30 @@ function getTrueColorOrder(colors: ColorWithFormat[]) {
   return minOrder;
 }
 // purpose.variant
-type Semantic = Dictionary<string|undefined>[];
+type Semantic = Dictionary<string|Semantic>;
 type Config = {
-    mapping: Semantic,
-    r1: number,
-    r2: number,
-    todoSize: number,
+    semantic: Semantic,
+    shades: {
+      p10: number,
+      p25: number,
+      p50: number,
+      p75: number,
+      p125: number,
+    }
 }
 export const defaultConfig: Config = {
-  mapping: semantic.mappings,
-  r1: 0.25,
-  r2: 0.5,
-  todoSize: 1000,
+  semantic: semantic2,
+  shades: {
+    p10: 0.1,
+    p25: 0.25,
+    p50: 0.5,
+    p75: 0.75,
+    p125: 1.25,
+  },
 };
 
 type ColorMap = Map<string, ColorWithFormat|ColorMap>;
+export type NamedColors = { [k: string]: ColorWithFormat|NamedColors };
 
 function isColorWithFormat(obj: Object): obj is ColorWithFormat {
   return obj.constructor === ColorWithFormat;
@@ -186,14 +193,23 @@ function getMapByKeys(map: ColorMap, keys: string[]): ColorMap {
   return mapIter;
 }
 
-function mapToObj(map: Map<string, ColorWithFormat|ColorMap>): NamedColors {
-  return Object.fromEntries(_.map(Array.from(map.entries()), ([k, v]: [string, ColorMap | ColorWithFormat], i): [string, NamedColors|ColorWithFormat] => {
-    if (isColorWithFormat(v)) {
-      return [k, v];
-    }
-    return [k, mapToObj(v)];
-  }));
+function mapToObj(map: ColorMap): NamedColors {
+  const entries = _.map(
+    Array.from(map.entries()),
+    ([k, v]): [string, NamedColors|ColorWithFormat] => {
+      if (isColorWithFormat(v)) {
+        return [k, v];
+      }
+      return [k, mapToObj(v)];
+    },
+  );
+
+  return Object.fromEntries(entries);
 }
+
+type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>;
+};
 
 export function getNamedColors(palette: Color[], cfg: Config = defaultConfig): NamedColors {
   const paletteWithFormat = _.map(palette, (c) => new ColorWithFormat(c));
@@ -202,17 +218,20 @@ export function getNamedColors(palette: Color[], cfg: Config = defaultConfig): N
   const foreground = paletteWithFormat[1];
   const colors = paletteWithFormat.slice(2);
   const order = getTrueColorOrder(colors);
-  const map = new Map<string, ColorMap|ColorWithFormat>();
+  const map: ColorMap = new Map();
 
   function setColor(key: string, c: ColorWithFormat) {
     const m = new Map<string, ColorWithFormat>();
-    m.set('o', c);
-    m.set('b', new ColorWithFormat(customMix(c.color, background.color, 1 - cfg.r1)));
-    m.set('m', new ColorWithFormat(customMix(c.color, background.color, cfg.r2)));
-    m.set('s', new ColorWithFormat(customMix(c.color, background.color, cfg.r1)));
-    m.set('h', new ColorWithFormat(customMix(c.color, foreground.color, cfg.r2)));
+    m.set('p10', new ColorWithFormat(customMix(background.color, c.color, cfg.shades.p10)));
+    m.set('p25', new ColorWithFormat(customMix(background.color, c.color, cfg.shades.p25)));
+    m.set('p50', new ColorWithFormat(customMix(background.color, c.color, cfg.shades.p50)));
+    m.set('p75', new ColorWithFormat(customMix(background.color, c.color, cfg.shades.p75)));
+    m.set('p100', c);
+    m.set('p125', new ColorWithFormat(customMix(background.color, c.color, cfg.shades.p125)));
     map.set(key, m);
   }
+  map.set('background', background);
+  setColor('foreground', foreground);
   setColor('c1', colors[0]);
   setColor('c2', colors[1]);
   setColor('c3', colors[2]);
@@ -227,18 +246,6 @@ export function getNamedColors(palette: Color[], cfg: Config = defaultConfig): N
   map.set('cyan', map.get(`c${order[3] + 1}`)!);
   map.set('blue', map.get(`c${order[4] + 1}`)!);
   map.set('magenta', map.get(`c${order[5] + 1}`)!);
-
-  const backgroundMap = new Map<string, ColorWithFormat>();
-  backgroundMap.set('o', background);
-  backgroundMap.set('s', new ColorWithFormat(customMix(background.color, foreground.color, cfg.r1)));
-  backgroundMap.set('ss', new ColorWithFormat(customMix(background.color, foreground.color, cfg.r1 / 2)));
-  map.set('background', backgroundMap);
-
-  const foregroundMap = new Map<string, ColorWithFormat>();
-  foregroundMap.set('o', foreground);
-  foregroundMap.set('s', new ColorWithFormat(customMix(foreground.color, background.color, cfg.r1)));
-  foregroundMap.set('ss', new ColorWithFormat(customMix(foreground.color, background.color, cfg.r2)));
-  map.set('foreground', foregroundMap);
 
   const todoMap = new Map<string, ColorWithFormat>();
   const todoBase = [
@@ -261,27 +268,24 @@ export function getNamedColors(palette: Color[], cfg: Config = defaultConfig): N
   });
   map.set('todo', todoMap);
 
-  _.each(cfg.mapping, (obj, i) => {
-    const objKey = _.keys(obj);
-    if (objKey.length !== 1) {
-      throw new Error(`More than 1 key at ${i}-th obj`);
-    }
-    const keys = objKey[0].split('.');
-    const values = obj[objKey[0]]!.split('.');
+  function iterateSemantic(s: Semantic, currentMap: ColorMap) {
+    _.each(Object.entries(s), ([key, value]) => {
+      if (isString(value)) {
+        const values = value.split('.');
+        let ptr: ColorMap|ColorWithFormat = map;
+        _.each(values, (v) => { ptr = (ptr as ColorMap).get(v)!; });
+        currentMap.set(key, ptr);
+      } else {
+        const map2: ColorMap = new Map();
+        currentMap.set(key, map2);
+        iterateSemantic(value, map2);
+      }
+    });
+  }
 
-    const keyMap = getMapByKeys(map, keys);
-    const valueMap = getMapByKeys(map, values);
-    const valueObj = valueMap.get(values[values.length - 1]);
-
-    if (valueObj === undefined) {
-      throw new Error(`Cannot fetch '${values.join('.')}'`);
-    }
-    keyMap.set(keys[keys.length - 1], valueObj);
-  });
+  iterateSemantic(cfg.semantic, map);
   return mapToObj(map);
 }
-
-export type NamedColors = { [k: string]: ColorWithFormat&NamedColors&undefined };
 
 export function render(template: string, cs: Color[], cfg: Config = defaultConfig) {
   const namedColors = getNamedColors(cs, cfg);

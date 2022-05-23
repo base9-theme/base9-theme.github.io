@@ -10,8 +10,8 @@
       <div
         class="preview-cell"
         :style="{
-          background: (namedColors as any).background.o.color.hex(),
-          color: (namedColors as any).c0.o.color.hex(),
+          background: (namedColors as any).background.color.hex(),
+          color: (namedColors as any).c0.p100.color.hex(),
         }"
         v-for="([s], i) in previewListColumns"
         v-bind:key="i"
@@ -78,11 +78,12 @@ const previewListColumns: [
   (c: string) => [string, string],
   (c: string) => [string, string],
 ][] = [
-  ['Colored Bg', (c) => [`c${c}`, 'b'], () => ['foreground', 'o']],
-  ['Colored Highlight', (c) => [`c${c}`, 'm'], () => ['foreground', 'o']],
-  ['Softer', () => ['background', 'o'], (c) => [`c${c}`, 's']],
-  ['Normal', () => ['background', 'o'], (c) => [`c${c}`, 'o']],
-  ['Harder', () => ['background', 'o'], (c) => [`c${c}`, 'h']],
+  ['p10 bg', (c) => [`c${c}`, 'p10'], () => ['foreground', 'p100']],
+  ['p25 bg', (c) => [`c${c}`, 'p25'], () => ['foreground', 'p100']],
+  ['p50 bg', (c) => [`c${c}`, 'p50'], () => ['foreground', 'p100']],
+  ['p75', () => ['ansi', '0'], (c) => [`c${c}`, 'p75']],
+  ['p100', () => ['ansi', '0'], (c) => [`c${c}`, 'p100']],
+  ['p125', () => ['ansi', '0'], (c) => [`c${c}`, 'p125']],
 ];
 
 // function getVar(i: number) {
@@ -95,6 +96,11 @@ const previewListColumns: [
 // }));
 const colors = inject('colors') as Ref<ColorPalette>;
 const namedColors = computed(() => getNamedColors(colors.value));
+// const namedColors = computed(() => {
+//   const tmp = getNamedColors(colors.value);
+//   (window as any).namedColors = tmp;
+//   return tmp;
+// });
 const previewList = computed(() => _.flatMap(previewListRows.split(''), (c) => _.map(previewListColumns, ([s, bg, fg]) => {
   if (c === ' ') {
     return {
