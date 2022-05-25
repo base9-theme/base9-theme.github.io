@@ -57,8 +57,8 @@ import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import Import from './components/Import.vue';
 import Logo from './components/Logo.vue';
 import { getCssVariableName } from './helpers';
-import type { ColorPalette } from './base9-core/index';
-import { render, toPaletteString, PALETTE_REGEX } from './base9-core/index';
+import type { ColorPalette } from 'base9-core';
+import { render, toPaletteString, PALETTE_REGEX } from 'base9-core';
 import logoTemplate from './assets/templates/logo.svg.mustache';
 
 const route = useRoute();

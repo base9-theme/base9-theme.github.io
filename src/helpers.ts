@@ -1,6 +1,6 @@
 import Color from 'color';
 import _, { Dictionary } from 'lodash';
-import type { ColorPalette } from './base9-core/index';
+import type { ColorPalette } from 'base9-core';
 
 const base24Digits = [
   'base00',

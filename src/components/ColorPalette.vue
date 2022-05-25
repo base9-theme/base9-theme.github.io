@@ -14,7 +14,7 @@ import {
 } from 'vue';
 import Color from 'color';
 import _ from 'lodash';
-import type { ColorPalette } from '../base9-core/index';
+import type { ColorPalette } from 'base9-core';
 
 const colors = inject('colors') as Ref<ColorPalette>;
 const colorsHexView = _.times(9, (i: number) => computed({
