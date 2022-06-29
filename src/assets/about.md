@@ -2,16 +2,16 @@
 
 An architecture for building themes based on a base of nine colors.
 Base9 provides a website for designing the color palette and tools for applying
-it to your favorate program. It is inspired by Base16.
+it to your favorite program. It is inspired by Base16.
 
 ## How to use the website.
-* Pick your favorate color on the left.
+* Pick your favorite color on the left.
 * Preview the colors in preview tab on the top.
-* Apply the colors to your favorate program in one of two ways.
+* Apply the colors to your favorite program in one of two ways.
     * Go to Export tab and select the program and copy/paste the settings.
     * Copy the 62 char long string on the left into your program's base9 setting.
 
-## How its different from Base16
+## How it's different from Base16
 
 While is base16 is very successful, it is more or less stopped being maintained.
 
@@ -34,11 +34,11 @@ different shades of colors, allowing more vivid UI.
 ### Relative vs Absolute
 In UI, we sometimes need to the color red to display error, and green to display
 happy case. I call it absolute color.
-In other places we just want our favorate color to pop out and another favorate
+In other places we just want our favorite color to pop out and another favorite
 color in other places. I call it relative color.
 Base16 does not differentiate it, therefore if the button color is
 the same as the error color, it will always be. If you don't like red being the
-button color, you have make your error message non red as well.
+button color, you have made your error message non-red as well.
 
 In base9, you only specify relative colors, and it will pick the most red color
 as red and the most green color as green, and apply them in appropriate places.
@@ -52,7 +52,7 @@ programs that uses ANSI 256 color. When only ANSI 256 is supported, Base9 will
 try its best to display the best color without overriding it. (This is not
 implemented yet)
 
-## How to implement base9 color theme for your favorate program
+## How to implement base9 color theme for your favorite program
 
 ### Choose colors consistent with the rest of base9 ecosystem
 In order to have consistent theme across different programs using base9,
@@ -63,12 +63,12 @@ If it's a light theme, the reverse is true.
 
 How each base color should be used is specified in the schema.
 
-Other than the backgroud, each of 8 colors has 6 shades from darkest to the brightest:
+Other than the background, each of 8 colors has 6 shades from darkest to the brightest:
 1. Signifies a slight difference from background.
 Used mostly for elevating UI component, highlighting even/old lines.
-Should not be used for highlighting for user attension.
-2. Used as highlighted background for user attension.
-3. Try not to use it as background or foreground. As it could make the constrast
+Should not be used for highlighting for user attention.
+2. Used as highlighted background for user attention.
+3. Try not to use it as background or foreground. As it could make the contrast
 too low. Can sometimes be used as borders in UI.
 4. A darker shade of the normal color.
 5. The original color.
