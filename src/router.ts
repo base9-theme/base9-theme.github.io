@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Preview from './views/Preview.vue';
 import Export from './views/Export.vue';
-import About from './views/About.vue';
 import about from './assets/about.md';
 import templateGuide from './assets/template_guide.md';
+import colorPaletteGuide from './assets/color_palette_guide.md';
 
 const routes = [
   {
@@ -14,8 +14,7 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    component: About,
-    props: { mdString: about},
+    component: about,
   },
   {
     path: '/export',
@@ -25,8 +24,12 @@ const routes = [
   {
     path: '/guide/template',
     name: 'Template',
-    component: About,
-    props: { mdString: templateGuide },
+    component: templateGuide,
+  },
+  {
+    path: '/guide/color_palette',
+    name: 'Color Palette',
+    component: colorPaletteGuide,
   }
 ];
 

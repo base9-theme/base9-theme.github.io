@@ -7,8 +7,9 @@ declare module '*.vue' {
   export default component;
 }
 declare module '*.md' {
-  const s: string;
-  export default s;
+  import type { ComponentOptions } from 'vue'
+  const Component: ComponentOptions
+  export default Component
 }
 declare module '*.yaml' {
   const s: any;

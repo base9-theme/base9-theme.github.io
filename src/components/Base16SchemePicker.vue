@@ -27,6 +27,21 @@ import { toPaletteString } from 'base9-core';
 const message = useMessage();
 
 const schemesRaw = import.meta.globEager('../assets/schemes-base16/*.yaml');
+
+// let tmp = ""
+// _.entries(schemesRaw).map(([k, v], i) => {
+//   const colors16 = getColors16FromSchemeObj(v);
+//   const key = ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k) || [])[1]);
+//   tmp += key +"	"
+//   _.times(16, i => {
+//     tmp += colors16[i].red() + "	";
+//     tmp += colors16[i].green() + "	";
+//     tmp += colors16[i].blue() + "	";
+//   });
+//   tmp +="\n"
+// })
+// console.log(tmp)
+
 const options = _.entries(schemesRaw).map(([k, v], i) => {
   const key = ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k) || [])[1]);
   const colors16 = getColors16FromSchemeObj(v);

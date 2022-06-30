@@ -5,6 +5,7 @@ import rawPlugin from 'vite-raw-plugin';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
+import Markdown from 'vite-plugin-md'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,9 +22,12 @@ export default defineConfig({
     port: 8080,
   },
   plugins: [
-    vue(),
+    vue({
+      include: [/\.vue$/, /\.md$/],
+    }),
+    Markdown(),
     content(),
-    rawPlugin({ fileRegex: /\.(mustache|md)$/ }),
+    rawPlugin({ fileRegex: /\.(mustache)$/ }),
     AutoImport({
       resolvers: [NaiveUiResolver()],
     }),

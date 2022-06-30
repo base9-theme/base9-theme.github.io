@@ -30,6 +30,9 @@ Generally, most of interactable UI element should be `primary` and most other
 interactable UI elements should be `secondary`.
 Most non-interactable UI elements should be `foreground`.
 
+Avoid using absolute and relative colors in the same place, since there might be
+color collisions.
+
 ### What shade to pick
 Other than the backgroud, each color has 6 shades to choose from. They are
 `p10`, `p25`, `p50`, `p75`, `p100`, `p125` from darkest to brightest. The names

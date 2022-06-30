@@ -142,12 +142,15 @@ function createRouterLinkMenuItem({path, label}: {path: string, label: string}) 
    }
 }
 const menuOptions = [
-  ..._.map(menuRaw, createRouterLinkMenuItem),
+  createRouterLinkMenuItem({path: '/about', label: 'About'}),
+  createRouterLinkMenuItem({path: '/', label: 'Preview'}),
+  createRouterLinkMenuItem({path: '/export', label: 'Export'}),
   {
     label: 'Guide',
     key: 'Guide',
     children: [
       createRouterLinkMenuItem({path: '/guide/template', label: 'Template'}),
+      createRouterLinkMenuItem({path: '/guide/color_palette', label: 'Color Palette'}),
     ]
   }
 ];

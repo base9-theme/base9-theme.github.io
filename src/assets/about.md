@@ -54,20 +54,9 @@ implemented yet)
 
 ## Designing color palette
 
-Each color is used differently in the base9 system.
-Although the use case might change slightly, here is the general run down:
-
-1. Background. The darkest color ever possible in UI.
-It will also be used to mix other color to create darker shades.
-2. Normal foreground.
-3. Primary color in UI. Signifies importance. Used for headings, buttons.
-4. Secondary in UI. Signifies special. Used for quotes, highlights
-5. Used for function names, decorators, literals, constants.
-6. Used for strings.
-7. Used for tags, search matches.
-8. Used for symbols.
-9. Used for keywords.
+See [Color Palette Guide](/guide/color_palette)
 
 ## How to implement base9 color theme for your favorite program
 
-TODO link to template guide
+See [Template Guide](/guide/template)
+
