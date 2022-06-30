@@ -13,13 +13,23 @@ it to your favorite program. It is inspired by Base16.
 
 ## How it's different from Base16
 
-While is base16 is very successful, it is more or less stopped being maintained.
+While is base16 is very successful. But when I created base9, base16 was more or
+less stopped being maintained.
 
-It also has a very fragmented community. Since every implementation of base16
+It also had a very fragmented community. Since every implementation of base16
 is in it's own repository with its owner, it's very hard to make changes across
 all of them.
 
 Base9 aims to fix them while provide more improvements.
+
+Base16 has since been revitalized in [here](https://github.com/base16-project/base16)
+
+It brings the base16 community together once again and aims to fix the issues it has.
+
+The future of base9 is unclear, but for now it will continue to be developed.
+
+Here is some of the improvements that base9 differs from base16 at the time of
+writing (June 30 2022).
 
 ### Less but more choices
 A base9 theme plugin for any program does not contain bloats for hundreds of
