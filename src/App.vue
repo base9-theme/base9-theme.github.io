@@ -23,7 +23,7 @@
             <import/>
           </n-layout-sider>
           <n-layout-content>
-            <router-view  v-bind:style="cssVariable"/>
+            <router-view  :key="$route.path" v-bind:style="cssVariable"/>
           </n-layout-content>
         </n-layout>
       </n-layout-content>
@@ -121,16 +121,36 @@ const menuRaw = [
     path: '/export',
   },
 ];
-const menuOptions = _.map(menuRaw, ({ label, path }) => ({
-  label: () => h(
-    RouterLink,
-    {
-      to: { path },
-    },
-    { default: () => label },
-  ),
-  key: label,
-}));
+
+const guideRaw = [
+  {
+    label: 'Template',
+    path: 'template',
+  },
+]
+
+function createRouterLinkMenuItem({path, label}: {path: string, label: string}) {
+   return {
+     label: () => h(
+      RouterLink,
+      {
+        to: { path },
+      },
+      { default: () => label },
+     ),
+     key: label,
+   }
+}
+const menuOptions = [
+  ..._.map(menuRaw, createRouterLinkMenuItem),
+  {
+    label: 'Guide',
+    key: 'Guide',
+    children: [
+      createRouterLinkMenuItem({path: '/guide/template', label: 'Template'}),
+    ]
+  }
+];
 const activeKey = ref(null);
 provide('colors', colors);
 const svgString = computed(() => render(logoTemplate, colors.value));

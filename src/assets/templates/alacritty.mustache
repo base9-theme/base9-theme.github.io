@@ -1,35 +1,39 @@
+{{#hex}}
 # Base9 - alacritty color config
 colors:
   # Default colors
   primary:
-    background: '0x{{background.hex}}'
-    foreground: '0x{{foreground.p100.hex}}'
+    background: '0x{{background}}'
+    foreground: '0x{{foreground.p100}}'
 
   # Colors the cursor will use if `custom_cursor_colors` is true
   cursor:
-    text: '0x{{background.p100.hex}}'
-    cursor: '0x{{foreground.p100.hex}}'
+    text: '0x{{background.p100}}'
+    cursor: '0x{{foreground.p100}}'
 
   # Normal colors
+  {{#ansi}}
   normal:
-    black:   '0x{{ansi.black.hex}}'
-    red:     '0x{{ansi.red.hex}}'
-    green:   '0x{{ansi.green.hex}}'
-    yellow:  '0x{{ansi.yellow.hex}}'
-    blue:    '0x{{ansi.blue.hex}}'
-    magenta: '0x{{ansi.magenta.hex}}'
-    cyan:    '0x{{ansi.cyan.hex}}'
-    white:   '0x{{ansi.white.hex}}'
+    black:   '0x{{black}}'
+    red:     '0x{{red}}'
+    green:   '0x{{green}}'
+    yellow:  '0x{{yellow}}'
+    blue:    '0x{{blue}}'
+    magenta: '0x{{magenta}}'
+    cyan:    '0x{{cyan}}'
+    white:   '0x{{white}}'
 
   # Bright colors
   bright:
-    black:   '0x{{ansi.bright_black.hex}}'
-    red:     '0x{{ansi.bright_red.hex}}'
-    green:   '0x{{ansi.bright_green.hex}}'
-    yellow:  '0x{{ansi.bright_yellow.hex}}'
-    blue:    '0x{{ansi.bright_blue.hex}}'
-    magenta: '0x{{ansi.bright_magenta.hex}}'
-    cyan:    '0x{{ansi.bright_cyan.hex}}'
-    white:   '0x{{ansi.bright_white.hex}}'
+    black:   '0x{{bright_black}}'
+    red:     '0x{{bright_red}}'
+    green:   '0x{{bright_green}}'
+    yellow:  '0x{{bright_yellow}}'
+    blue:    '0x{{bright_blue}}'
+    magenta: '0x{{bright_magenta}}'
+    cyan:    '0x{{bright_cyan}}'
+    white:   '0x{{bright_white}}'
+  {{/ansi}}
 
 draw_bold_text_with_bright_colors: false
+{{/hex}}

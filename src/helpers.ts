@@ -39,12 +39,12 @@ export function getColorsFromBase16(colors: Color[]): ColorPalette {
   return [
     colors[0],
     colors[5],
-    colors[8],
-    colors[9],
-    colors[10],
-    colors[11],
-    colors[12],
     colors[13],
+    colors[12],
+    colors[11],
+    colors[10],
+    colors[9],
+    colors[8],
     colors[14],
   ];
 }

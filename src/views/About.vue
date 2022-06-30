@@ -7,7 +7,7 @@
 </style>
 <script setup lang="ts">
 import { marked } from 'marked';
-import mdString from '../assets/about.md';
 
-const content = marked(mdString, { sanitize: true });
+const props = defineProps<{mdString: string}>()
+const content = marked(props.mdString, { sanitize: true });
 </script>

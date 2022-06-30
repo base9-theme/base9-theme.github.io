@@ -10,11 +10,14 @@
 <script setup lang="ts">
 import {
   h,
-  inject, Ref, ref, watch,
+  inject, Ref, ref, VNode, watch,
 } from 'vue';
 import _ from 'lodash';
-import { NIcon, useMessage } from 'naive-ui';
+import { NIcon, useMessage, SelectOption as NSelectOption} from 'naive-ui';
+import SelectOption from './SelectOption.vue';
 import Logo from './Logo.vue';
+import compactTemplate from '../assets/templates/compact.svg.mustache';
+import { render } from 'base9-core';
 import {
   getColorsFromBase16, getColors16FromSchemeObj,
 } from '../helpers';
@@ -37,6 +40,7 @@ const options = _.entries(schemesRaw).map(([k, v], i) => {
     },
   };
 });
+
 const renderLabel = function (option: typeof options[number]) {
   return [
     h(
@@ -46,12 +50,8 @@ const renderLabel = function (option: typeof options[number]) {
           verticalAlign: 'middle',
           marginRight: '4px',
         },
-      },
-      {
-        default: () => h(Logo, {
-          colors: option.data.colors,
-        }),
-      },
+        innerHTML: render(compactTemplate, option.data.colors),
+      }
     ),
     option.label,
   ];

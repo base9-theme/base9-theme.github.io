@@ -52,30 +52,6 @@ programs that uses ANSI 256 color. When only ANSI 256 is supported, Base9 will
 try its best to display the best color without overriding it. (This is not
 implemented yet)
 
-## How to implement base9 color theme for your favorite program
-
-### Choose colors consistent with the rest of base9 ecosystem
-In order to have consistent theme across different programs using base9,
-Colors should have consistent use.
-
-In this section we will assume it's a dark theme.
-If it's a light theme, the reverse is true.
-
-How each base color should be used is specified in the schema.
-
-Other than the background, each of 8 colors has 6 shades from darkest to the brightest:
-1. Signifies a slight difference from background.
-Used mostly for elevating UI component, highlighting even/old lines.
-Should not be used for highlighting for user attention.
-2. Used as highlighted background for user attention.
-3. Try not to use it as background or foreground. As it could make the contrast
-too low. Can sometimes be used as borders in UI.
-4. A darker shade of the normal color.
-5. The original color.
-6. Used as highlighting foreground. Try not to use it and use 2nd shade as
-background when possible. Since depending on the color palette,
-there might not be a color brighter than the original color.
-
 ## Designing color palette
 
 Each color is used differently in the base9 system.
@@ -84,11 +60,14 @@ Although the use case might change slightly, here is the general run down:
 1. Background. The darkest color ever possible in UI.
 It will also be used to mix other color to create darker shades.
 2. Normal foreground.
-3. Used for symbols.
-4. Used for tags, search matches.
-5. Used for strings.
-6. Used for function names, decorators, literals, constants.
-7. Secondary in UI. Signifies special. Used for quotes, highlights
-8. Primary color in UI. Signifies importance. Used for headings, buttons.
+3. Primary color in UI. Signifies importance. Used for headings, buttons.
+4. Secondary in UI. Signifies special. Used for quotes, highlights
+5. Used for function names, decorators, literals, constants.
+6. Used for strings.
+7. Used for tags, search matches.
+8. Used for symbols.
 9. Used for keywords.
 
+## How to implement base9 color theme for your favorite program
+
+TODO link to template guide

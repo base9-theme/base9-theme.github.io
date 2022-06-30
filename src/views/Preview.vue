@@ -10,8 +10,8 @@
       <div
         class="preview-cell"
         :style="{
-          background: (namedColors as any).background.color.hex(),
-          color: (namedColors as any).c0.p100.color.hex(),
+          background: (colorData as any).background.hex(),
+          color: (colorData as any).c0.p100.hex(),
         }"
         v-for="([s], i) in previewListColumns"
         v-bind:key="i"
@@ -68,7 +68,7 @@ import _ from 'lodash';
 // import Ansi from './Ansi.vue';
 
 // import tmp from '..assets'
-import { getNamedColors } from 'base9-core';
+import { getColorData } from 'base9-core';
 
 import type { ColorPalette } from 'base9-core';
 
@@ -95,21 +95,21 @@ const previewListColumns: [
 //   color: getVar(contrastIndex[i]),
 // }));
 const colors = inject('colors') as Ref<ColorPalette>;
-const namedColors = computed(() => getNamedColors(colors.value));
+const colorData = computed(() => getColorData(colors.value));
 // const namedColors = computed(() => {
-//   const tmp = getNamedColors(colors.value);
+//   const tmp = getColorData(colors.value);
 //   (window as any).namedColors = tmp;
 //   return tmp;
 // });
 const previewList = computed(() => _.flatMap(previewListRows.split(''), (c) => _.map(previewListColumns, ([s, bg, fg]) => {
   if (c === ' ') {
     return {
-      bg: namedColors.value.background,
-      fg: namedColors.value.foreground,
+      bg: colorData.value.background,
+      fg: colorData.value.foreground,
     };
   }
-  const cbg = (namedColors.value as any)[bg(c)[0]][bg(c)[1]].color;
-  const cfg = (namedColors.value as any)[fg(c)[0]][fg(c)[1]].color;
+  const cbg = (colorData.value as any)[bg(c)[0]][bg(c)[1]];
+  const cfg = (colorData.value as any)[fg(c)[0]][fg(c)[1]];
   return {
     bg: cbg,
     fg: cfg,
@@ -121,7 +121,7 @@ function previewNumber(bg: Color, fg: Color) {
 
 const ansiList = computed(() => _.times(
   16,
-  (x) => (namedColors.value.ansi as any)[x.toString(16)].color,
+  (x) => (colorData.value.ansi as any)[x.toString(16)],
 ));
 const ansiLabel = [
   'Black',
