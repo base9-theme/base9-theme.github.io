@@ -21,7 +21,6 @@ import {
   computed, inject, Ref, ref,
 } from 'vue';
 import { render } from 'base9-core';
-import semantic from '../assets/semantic.yaml';
 import type { ColorPalette } from 'base9-core';
 
 const templateRaw = import.meta.globEager('../assets/templates/*.mustache');

@@ -11,9 +11,22 @@ it to your favorite program. It is inspired by Base16.
     * Go to Export tab and select the program and copy/paste the settings.
     * Copy the 62 char long string on the left into your program's base9 setting.
 
+## Overall Vision
+Base9 wants to democratize color theme. It aims to let end users with little to no
+programming or color science knowledge to customize its favorite apps.
+
+Base9 aims to achieve it by having the user designing/specify only a few things
+(as little as possible, only colors for now) and let Base9 figure out the rest
+using color science and programming.
+
+Base9 also aims to let user apply the designed theme to all programs easily.
+
+Without sacrificing such simplicity, Base9 also tries to provide limited, optional finer
+control for the theme generation for user who wants more control.
+
 ## How it's different from Base16
 
-While is base16 is very successful. But when I created base9, base16 was more or
+Base16 is very successful. But when I created base9, base16 was more or
 less stopped being maintained.
 
 It also had a very fragmented community. Since every implementation of base16

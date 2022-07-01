@@ -1,4 +1,6 @@
 <script lang="ts">
+// WHOLE FILE IS DEAD CODE
+// For reference only.
 import { defineComponent, ref, VueElement } from 'vue';
 
 // import tmp from '..assets'

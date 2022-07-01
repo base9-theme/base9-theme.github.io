@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import markdownItAnchor from "markdown-it-anchor";
 import vue from '@vitejs/plugin-vue';
 import content from '@originjs/vite-plugin-content';
 import rawPlugin from 'vite-raw-plugin';
@@ -25,7 +26,11 @@ export default defineConfig({
     vue({
       include: [/\.vue$/, /\.md$/],
     }),
-    Markdown(),
+    Markdown({
+      markdownItSetup(md) {
+        md.use(markdownItAnchor)
+      },
+    }),
     content(),
     rawPlugin({ fileRegex: /\.(mustache)$/ }),
     AutoImport({
