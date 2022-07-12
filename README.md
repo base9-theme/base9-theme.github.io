@@ -1,37 +1,18 @@
-# Base24
+# base9
 
-An architecture for building themes based on carefully chosen syntax highlighting using a base of 24 colors.
+An architecture for building themes based on a base of nine colors.
 
-## Why Base24
+Go to https://base9-theme.github.io/about for more info.
 
-Base16 is an awesome tool. But it has a few short commings that inspired me to address:
+This README is concerning the code base.
 
-### ANSI Color
-ANSI 4-bit color is a standard used in terminals that specify 16 colors to be used by programs in terminals.
+## Contribution
 
-However
-Base16 does not have enough colors to specify all 16 ANSI colors.
+There are several ways to help:
 
-
-
-
-
-## Get Started
-
-## List of Templates
-
-## Improvements addition to base16
-<!-- 1. Lets you specify lighter version colors. -->
-1. Better ANSI color support.
-a. Support specifying all ANSI 4 bit color
-a. Does not override ANSI 256 color palette
-a. Enable compatibility mode for programs that only support 256 colors
-2. Help you design the scheme based on color science
-Does not have hundreds of schemes pre-installed
-Support all base16 schemes and templates.
-Better looking
-
-
+1. Use and test the tool, and give feedbacks.
+2. Spread the word.
+3. Submit PRs. Look for [TODO items](https://github.com/search?q=org%3Abase9-theme+%22TODO%28CONTRIB%29%22&type=code) in the organization. Feel free to create issues concerning the items.
 
 ## Credit
 
