@@ -52,14 +52,14 @@ import {
 } from 'vue-router';
 import type { RouteLocation } from 'vue-router';
 
-// import Main from './components/Main2.vue';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import Import from './components/Import.vue';
 import Logo from './components/Logo.vue';
-import { getCssVariableName } from './helpers';
-import type { ColorPalette } from 'base9-core';
-import { render, toPaletteString, PALETTE_REGEX } from 'base9-core';
+import { toPaletteString, PALETTE_REGEX, getCssVariableName } from './helpers';
+import type { ColorPalette } from './helpers';
 import logoTemplate from './assets/templates/logo.svg.mustache';
+
+import { renderString } from "base9-builder";
 
 const route = useRoute();
 const router = useRouter();
@@ -149,14 +149,13 @@ const menuOptions = [
     label: 'Guide',
     key: 'Guide',
     children: [
-      createRouterLinkMenuItem({path: '/guide/template', label: 'Template'}),
       createRouterLinkMenuItem({path: '/guide/color_palette', label: 'Color Palette'}),
     ]
   }
 ];
 const activeKey = ref(null);
 provide('colors', colors);
-const svgString = computed(() => render(logoTemplate, colors.value));
+const svgString = computed(() => renderString(toPaletteString(colors.value), logoTemplate));
 const cssVariable = computed(() => Object.fromEntries(
   _.map(colors.value, (c, i) => [getCssVariableName(i), c.hex()]),
 ));

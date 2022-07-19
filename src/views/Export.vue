@@ -20,8 +20,8 @@ import _, { Dictionary } from 'lodash';
 import {
   computed, inject, Ref, ref,
 } from 'vue';
-import { render } from 'base9-core';
-import type { ColorPalette } from 'base9-core';
+import { render } from '../helpers';
+import type { ColorPalette } from '../helpers';
 
 const templateRaw = import.meta.globEager('../assets/templates/*.mustache');
 const templateObj: Dictionary<string> = Object.fromEntries(_.entries(templateRaw).map(([k, v]) => ([

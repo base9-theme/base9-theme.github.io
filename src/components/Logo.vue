@@ -6,8 +6,8 @@
 </style>
 <script setup lang="ts">
 import { defineProps } from 'vue';
-import { render } from 'base9-core';
-import type { ColorPalette } from 'base9-core';
+import { render } from '../helpers';
+import type { ColorPalette } from '../helpers';
 import logoTemplate from '../assets/templates/logo.svg.mustache';
 
 const props = defineProps<{

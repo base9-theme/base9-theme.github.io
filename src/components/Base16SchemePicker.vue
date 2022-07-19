@@ -17,12 +17,10 @@ import { NIcon, useMessage, SelectOption as NSelectOption} from 'naive-ui';
 import SelectOption from './SelectOption.vue';
 import Logo from './Logo.vue';
 import compactTemplate from '../assets/templates/compact.svg.mustache';
-import { render } from 'base9-core';
 import {
-  getColorsFromBase16, getColors16FromSchemeObj,
+  getColorsFromBase16, getColors16FromSchemeObj, toPaletteString, render
 } from '../helpers';
-import type { ColorPalette } from 'base9-core';
-import { toPaletteString } from 'base9-core';
+import type { ColorPalette } from '../helpers';
 
 const message = useMessage();
 

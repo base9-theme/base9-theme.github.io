@@ -21,6 +21,9 @@ export default defineConfig({
   server: {
     host: true,
     port: 8080,
+    fs: {
+      allow: [".."], // allow loading local wasm in other folders
+    }
   },
   plugins: [
     vue({

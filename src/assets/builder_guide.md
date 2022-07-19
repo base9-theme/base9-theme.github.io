@@ -1,6 +1,6 @@
 # Builder Development Guide
 Only one builder should exist for each programming lanugae. The cannonical builder is
-[base-core](https://github.com/base9-theme/base9-core) in Typescript.
+[base9-builder](https://github.com/base9-theme/base9-builder) in Rust.
 
 All other builder should behave the same as the cannonical one.
 

@@ -1,6 +1,6 @@
+import { renderString } from 'base9-builder';
 import Color from 'color';
 import _, { Dictionary } from 'lodash';
-import type { ColorPalette } from 'base9-core';
 
 const base24Digits = [
   'base00',
@@ -23,6 +23,20 @@ const base24Digits = [
 export function getCssVariableName(i: number) {
   return `--base9-${i}`;
 }
+
+export function toPaletteString(color9: Color[]) {
+  return _.map(color9, (c) => c.hex().toString().substring(1)).join('-');
+}
+
+export function render(template: string, color9: Color[]) {
+  return renderString(toPaletteString(color9), template);
+}
+
+export type ColorPalette = [
+  Color, Color, Color, Color, Color, Color, Color, Color, Color,
+];
+
+export const PALETTE_REGEX = /^([0-9a-fA-F]{6}-){8}[0-9a-fA-F]{6}$/;
 
 export function getColors16FromSchemeObj(schemeObj: Dictionary<any>) {
   const colors16 = _.map(base24Digits, (v, k) => {
