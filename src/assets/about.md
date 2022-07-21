@@ -1,22 +1,28 @@
 # Base9
 
-An architecture for building themes based on a base of nine colors.
-Base9 provides a website for designing the color palette and tools for applying
-it to your favorite program. It is inspired by Base16.
+A system for generating themes for various apps using color science based on 9
+colors that user prefers.
 
-## How to use the website.
-* Pick your favorite color on the left.
-* Preview the colors in preview tab on the top.
-* Apply the colors to your favorite program in one of two ways.
-    * Go to Export tab and select the program and copy/paste the settings.
-    * Copy the 62 char long string on the left into your program's base9 setting.
+Here is how to use base9:
 
-## Overall Vision
+First, pick 9 colors, either by selecting from exist presets, or randomly generate them, or hand pick them by following [Color Palette Guide](/guide/color_palette).
+
+Copy the base9 palette code, which is the `-` separated hex value of the 9 colors.
+
+Example: 
+
+`282936-E9E9F4-FF5555-FFB86C-F1FA8C-50FA7B-8BE9FD-BD93F9-FF79C6`
+
+Checkout [list of supported templates](https://github.com/base9-theme/base9-templates) to see how to apply it to each application.
+
+
+## History and Vision
+
 Base9 wants to democratize color theme. It aims to let end users with little to no
 programming or color science knowledge to customize its favorite apps.
 
 Base9 aims to achieve it by having the user designing/specify only a few things
-(as little as possible, only colors for now) and let Base9 figure out the rest
+(as little as possible, only 9 colors for now) and let Base9 figure out the rest
 using color science and programming.
 
 Base9 also aims to let user apply the designed theme to all programs easily.
@@ -24,25 +30,19 @@ Base9 also aims to let user apply the designed theme to all programs easily.
 Without sacrificing such simplicity, Base9 also tries to provide limited, optional finer
 control for the theme generation for user who wants more control.
 
-## How it's different from Base16
+## Why base9 instead of base16 (the original one)
 
-Base16 is very successful. But when I created base9, base16 was more or
-less stopped being maintained.
+Base9 is heavily inspired by [base16](https://github.com/chriskempson/base16/tree/450914aeda69e6d9df90cb3bf0cc1c70f8d5b0f5)
 
-It also had a very fragmented community. Since every implementation of base16
-is in it's own repository with its owner, it's very hard to make changes across
-all of them.
+But when I created base9, base16 was more or less stopped being maintained.
 
-Base9 aims to fix them while provide more improvements.
+FYI, there is another group of people also creating a spiritual successor of base16
+that has similarities with base9 and is in early active development
+(Check out [here](https://github.com/base16-project/home)).
 
-Base16 has since been revitalized in [here](https://github.com/base16-project/base16)
+Base9 aims to address many problems that the original base16 has.
 
-It brings the base16 community together once again and aims to fix the issues it has.
 
-The future of base9 is unclear, but for now it will continue to be developed.
-
-Here is some of the improvements that base9 differs from base16 at the time of
-writing (June 30 2022).
 
 ### Less but more choices
 A base9 theme plugin for any program does not contain bloats for hundreds of
@@ -75,11 +75,16 @@ programs that uses ANSI 256 color. When only ANSI 256 is supported, Base9 will
 try its best to display the best color without overriding it. (This is not
 implemented yet)
 
-## Designing color palette
+## Centralized Community
+Every implementation of base16
+is in it's own repository with its owner, it's very
+hard to make changes across all of them.
 
-See [Color Palette Guide](/guide/color_palette)
+Base9 has a centralized org. This allows Base9 to make
+improvements across all apps more quickly, and ensure all
+templates stays top quality.
 
 ## How to implement base9 color theme for your favorite program
 
-See [Template Guide](/guide/template)
+See [Guide](https://github.com/base9-theme/base9-templates/blob/main/TEMPLATE_GUIDE.md)
 
