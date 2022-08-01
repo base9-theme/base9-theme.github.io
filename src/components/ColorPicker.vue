@@ -8,19 +8,6 @@
             size="small"
             label-width="auto"
         >
-            <!-- <n-form-item label="Fixed:">
-            <n-radio-group v-model:value="setting.fixed" name="radiogroup2">
-                <n-radio-button value="0">
-                    {{colorSpace.componentLabels[0]}}
-                </n-radio-button>
-                <n-radio-button value="1">
-                    {{colorSpace.componentLabels[1]}}
-                </n-radio-button>
-                <n-radio-button value="2">
-                    {{colorSpace.componentLabels[2]}}
-                </n-radio-button>
-            </n-radio-group>
-            </n-form-item> -->
             <n-form-item label="Space">
             <n-select
                 v-model:value="setting.space"
@@ -31,25 +18,31 @@
             <n-switch v-model:value="setting.showOthers"/>
             </n-form-item>
             <n-form-item :label="colorSpace.componentLabels[0]">
-            <n-input v-model="selectedComponents[0]"></n-input>
+            <n-input :value="selectedComponents[0].toFixed(0)"></n-input>
             </n-form-item>
             <n-form-item :label="colorSpace.componentLabels[1]">
-            <n-input v-model="selectedComponents[1]"></n-input>
+            <n-input :value="selectedComponents[1].toFixed(0)"></n-input>
             </n-form-item>
             <n-form-item :label="colorSpace.componentLabels[2]">
-            <n-input v-model="selectedComponents[2]"></n-input>
+            <n-input :value="selectedComponents[2].toFixed(0)"></n-input>
             </n-form-item>
         </n-form>
     </n-layout-sider>
     <n-layout-content content-style="padding: 24px;">
         <!-- <div :style="{margin: '10px'}"></div> -->
         <Draggable
-            :style="{position: 'relative', width: '200px', height: '200px'}"
+            :style="{
+                position: 'relative',
+                width: '500px',
+                height: '500px',
+                backgroundSize: '100%',
+                backgroundImage: `url(${canvasUrl})`
+            }"
             :cb="handleDrag"
         >
             <span
                 className="color-circle color-circle-selected"
-                :style="circleStyle(colors[setting.selected])"
+                :style="circleStyle(setting.tmpColor ?? colors[setting.selected])"
             ></span>
             <template v-if="setting.showOthers">
                 <template v-for="(c, i) in colors" v-bind:key="i">
@@ -57,10 +50,9 @@
                         v-if="i !== setting.selected"
                         className="color-circle"
                         :style="circleStyle(c)"
-                    >{{i}}</span>
+                    >{{i + 1}}</span>
                 </template>
             </template>
-            <canvas id="canvas2" width="200" height="200"></canvas>
         </Draggable>
     </n-layout-content>
 </n-layout>
@@ -93,15 +85,16 @@ import { ColorPalette } from "../helpers";
 
 const divRef = ref<HTMLDivElement|null>(null)
 
+type Number3 = [number, number, number];
+
 type ColorSpace = {
     readonly label: string,
     readonly componentLabels: [string, string, string],
-    toComponents: (c: Color) => [number, number, number],
-    fromComponents: (components: [number, number, number]) => Color,
+    toComponents: (c: Color) => Number3,
+    fromComponents: (components: Number3) => Color,
     preview: {
-        xYtoColor: (c: Color, x: number, y: number) => Color,
-        zToColor: (c: Color, z: number) => Color,
-        colorToXyz: (c: Color) => [number, number, number],
+        xyzToColor: (xyz: Number3) => Color,
+        colorToXyz: (c: Color) => Number3,
     }
 }
 function handleMouseDown(e: MouseEvent) {
@@ -125,20 +118,15 @@ const colorSpaces = {
         label: "RGB",
         componentLabels: ['R', 'G', 'B'],
         toComponents: (c: Color) => {
-            return c.rgb().array() as [number, number, number];
+            return c.rgb().array() as Number3;
         },
-        fromComponents: (components: [number, number, number]) => {
+        fromComponents: (components: Number3) => {
             return Color.rgb(components);
         },
         preview: {
-            xYtoColor(c: Color, x: number, y: number): Color {
-                const comp = c.hsv().array();
-                comp[1] = x*100;
-                comp[2] = y*100;
+            xyzToColor(xyz: Number3): Color {
+                const comp = [xyz[2]*360, xyz[0]*100, xyz[1]*100];
                 return Color.hsv(comp);
-            },
-            zToColor(c: Color, z: number) {
-                return Color.hsv(z*360, 100, 100);
             },
             colorToXyz(c: Color) {
                 let [h,s,v] = c.hsv().array();
@@ -150,22 +138,15 @@ const colorSpaces = {
         label: "Lab",
         componentLabels: ['L', 'a', 'b'],
         toComponents: (c: Color) => {
-            return c.lab().array() as [number, number, number];
+            return c.lab().array() as Number3;
         },
-        fromComponents: (components: [number, number, number]) => {
+        fromComponents: (components: Number3) => {
             return Color.lab(components);
         },
         preview: {
-            xYtoColor(c: Color, x: number, y: number): Color {
-                const comp = c.lch().array();
-                comp[1] = x*133;
-                comp[0] = y*100;
+            xyzToColor(xyz: Number3): Color {
+                const comp = [xyz[1]*100, xyz[0]*133, xyz[2]*360];
                 return Color.lch(comp);
-            },
-            zToColor(c: Color, z: number) {
-                const comp = c.lch().array();
-                comp[2] = z*360;
-                return Color.lab(comp);
             },
             colorToXyz(color: Color) {
                 let [l,c,h] = color.lch().array();
@@ -177,21 +158,14 @@ const colorSpaces = {
         label: "Lch",
         componentLabels: ['L', 'c', 'h'],
         toComponents: (c: Color) => {
-            return c.lch().array() as [number, number, number];
+            return c.lch().array() as Number3;
         },
-        fromComponents: (components: [number, number, number]) => {
+        fromComponents: (components: Number3) => {
             return Color.lch(components);
         },
         preview: {
-            xYtoColor(c: Color, x: number, y: number): Color {
-                const comp = c.lab().array();
-                comp[1] = (2*x-1)*128;
-                comp[2] = (2*y-1)*128;
-                return Color.lab(comp);
-            },
-            zToColor(c: Color, z: number) {
-                const comp = c.lab().array();
-                comp[0] = z*100;
+            xyzToColor(xyz: Number3): Color {
+                const comp = [xyz[2]*100, xyz[0]*256-128, xyz[1]*256-128];
                 return Color.lab(comp);
             },
             colorToXyz(c: Color) {
@@ -209,20 +183,25 @@ const options = _.entries(colorSpaces).map(([k, v]) => ({
 
 const colorSpace = computed(() => colorSpaces[setting.value.space]);
 const selectedColor = computed(() => colors.value[setting.value.selected]);
-const selectedComponents = computed(() => colorSpace.value.toComponents(selectedColor.value));
+const selectedComponents = computed(() => colorSpace.value.toComponents(setting.value.tmpColor ?? selectedColor.value));
 type ColorSpaceName = keyof typeof colorSpaces;
 
 const colors = inject('colors') as Ref<ColorPalette>;
-const tmpLog = console.log;
 const handleDrag = (e: DragEvent) => {
-    
-    const newColor = colorSpace.value.preview.xYtoColor(selectedColor.value, e.x, e.y);
-    colors.value[setting.value.selected] = newColor;
+    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    let newColor = colorSpace.value.preview.xyzToColor([e.x, e.y, oldXyz[2]]);
+
+    if(e.type === 'end') {
+        colors.value[setting.value.selected] = newColor;
+        setting.value.tmpColor = undefined;
+    } else {
+        setting.value.tmpColor = newColor;
+    }
 }
 
 const setting = ref({
     selected: 2,
-    tmpColor: undefined as undefined|[number, number, number],
+    tmpColor: undefined as undefined|Color,
     space: 'rgb' as ColorSpaceName,
     fixed: '0' as '0'|'1'|'2',
     polar: false,
@@ -230,10 +209,6 @@ const setting = ref({
 });
 const w = 200;
 const h = 200;
-
-watch(() => setting.value.showOthers, () => {
-    redraw();
-})
 
 function paintPixel(img: ImageData, x: number, y: number, c: Color) {
     const index = 4 * (y*w + x);
@@ -245,43 +220,37 @@ function paintPixel(img: ImageData, x: number, y: number, c: Color) {
 
 function circleStyle(c: Color): CSSProperties {
     return {
-        top: `${colorSpace.value.preview.colorToXyz(c)[1]*200}px`,
-        left: `${colorSpace.value.preview.colorToXyz(c)[0]*200}px`,
+        top: `${colorSpace.value.preview.colorToXyz(c)[1]*100}%`,
+        left: `${colorSpace.value.preview.colorToXyz(c)[0]*100}%`,
         background: c.hex(),
     }
 }
 
-interface Point {
-    x: number,
-    y: number,
+function xyzDistance(xyz1: Number3, xyz2: Number3) {
+    return Math.hypot(xyz1[0] - xyz2[0], xyz1[1] - xyz2[1], xyz1[2] - xyz2[2]);
 }
 
-// const colorLabel = ['Bg', 'Fg', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7'];
-const colorLabel = "BF1234567";
-
-function getImageData() {
-    const canvas = document.getElementById("canvas2") as HTMLCanvasElement;
+const canvasUrl = computed(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
     const ctx = canvas.getContext("2d")!;
     const img = ctx.createImageData(w,h);
+    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
     for(let xi = 0; xi < w; xi++) {
         for(let yi = 0; yi < h; yi++) {
-            paintPixel(img, xi, yi, colorSpace.value.preview.xYtoColor(selectedColor.value, xi/w, yi/h));
-        }
-    }
-    return img;
-}
-
-function redraw() {
-    console.log('redraw');
-    const canvas = document.getElementById("canvas2") as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d")!;
-    const img = ctx.createImageData(w,h);
-    for(let xi = 0; xi < w; xi++) {
-        for(let yi = 0; yi < h; yi++) {
-            paintPixel(img, xi, yi, colorSpace.value.preview.xYtoColor(selectedColor.value, xi/w, yi/h));
+            const xyz = [xi/w, yi/h, oldXyz[2]] as Number3;
+            let color = colorSpace.value.preview.xyzToColor(xyz).rgb();
+            const testXyz = colorSpace.value.preview.colorToXyz(color);
+            if(xyzDistance(xyz, testXyz) > 0.01) {
+                // color = color.darken(0.1);
+                color = Color.rgb(_.map(color.rgb().array(), x => x*0.9))
+            }
+            paintPixel(img, xi, yi, color);
         }
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(img, 0, 0);
-}
+    return canvas.toDataURL();
+});
 </script>

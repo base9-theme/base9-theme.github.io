@@ -1,6 +1,6 @@
 
 <template>
-    <div ref="divRef" v-on:mousedown.left="handleMouseDown" :style="{userSelect: 'none'}">
+    <div ref="divRef" v-on:mousedown.left="handleMouseDown" >
         <slot/>
     </div>
 </template>

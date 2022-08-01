@@ -1,30 +1,6 @@
 <template>
   <div>
     <ColorPicker></ColorPicker>
-    <a-form
-      :labelCol="{ span: 8 }"
-      :wrapperCol="{ span: 16 }"
-    >
-      <a-form-item label="Type">
-        <a-select style="width: 120px" >
-          <a-select-option value="RGB">RGB</a-select-option>
-          <a-select-option value="lucy">Lab</a-select-option>
-          <a-select-option value="Yiminghe">Lch</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="R">
-        <a-input/>
-      </a-form-item>
-      <a-form-item label="R">
-        <a-input/>
-      </a-form-item>
-      <a-form-item label="G">
-        <a-input/>
-      </a-form-item>
-      <a-form-item label="B">
-        <a-input/>
-      </a-form-item>
-    </a-form>
     <a-button>a</a-button>
     <h2>Absolute Colors</h2>
     <canvas id="canvas" width="500" height="500"></canvas>
@@ -66,6 +42,7 @@ watchPostEffect(() => {
 function run(colors1: Color[], colors2: Color[]) {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d")!;
+  ctx.resetTransform();
   const unit = 200;
 
   //clear
