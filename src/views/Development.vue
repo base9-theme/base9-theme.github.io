@@ -1,5 +1,31 @@
 <template>
   <div>
+    <ColorPicker></ColorPicker>
+    <a-form
+      :labelCol="{ span: 8 }"
+      :wrapperCol="{ span: 16 }"
+    >
+      <a-form-item label="Type">
+        <a-select style="width: 120px" >
+          <a-select-option value="RGB">RGB</a-select-option>
+          <a-select-option value="lucy">Lab</a-select-option>
+          <a-select-option value="Yiminghe">Lch</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="R">
+        <a-input/>
+      </a-form-item>
+      <a-form-item label="R">
+        <a-input/>
+      </a-form-item>
+      <a-form-item label="G">
+        <a-input/>
+      </a-form-item>
+      <a-form-item label="B">
+        <a-input/>
+      </a-form-item>
+    </a-form>
+    <a-button>a</a-button>
     <h2>Absolute Colors</h2>
     <canvas id="canvas" width="500" height="500"></canvas>
   </div>
@@ -7,6 +33,7 @@
 <style scoped>
 </style>
 <script setup lang="ts">
+
 import {
   computed, defineComponent, inject, Ref, ref, watchEffect, watchPostEffect,
 } from 'vue';
@@ -32,7 +59,7 @@ watchPostEffect(() => {
   const colors1 = colors.value.slice(2).map((c: Color) => {
     return Color.lab([c.l(), c.a(), c.b()]);
   })
-  console.log(colors.value[0].hex().substring(1)+"-"+colors.value[1].hex().substring(1)+"-"+colors1.map(c=>c.hex().substring(1)).join("-"));
+  // console.log(colors.value[0].hex().substring(1)+"-"+colors.value[1].hex().substring(1)+"-"+colors1.map(c=>c.hex().substring(1)).join("-"));
   run(colors1, absolute);
 })
 

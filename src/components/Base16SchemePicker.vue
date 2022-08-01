@@ -14,7 +14,7 @@ import {
 } from 'vue';
 import _ from 'lodash';
 import { NIcon, useMessage, SelectOption as NSelectOption} from 'naive-ui';
-import SelectOption from './SelectOption.vue';
+// import SelectOption from './SelectOption.vue';
 import Logo from './Logo.vue';
 import compactTemplate from '../assets/templates/compact.svg.mustache';
 import {
