@@ -15,7 +15,7 @@ import {
 } from 'vue';
 import Color from 'color';
 import _ from 'lodash';
-import {tmp} from '../tmp';
+import {tmp} from '../debug';
 
 // import Ansi from './Ansi.vue';
 

@@ -1,104 +1,136 @@
 <template>
-<n-layout has-sider sider-placement="right">
-    <n-layout-sider>
-        <n-form
-            ref="formRef"
-            label-placement="left"
-            require-mark-placement="right-hanging"
-            size="small"
-            label-width="auto"
-        >
-            <n-form-item label="Space">
-            <n-select
-                v-model:value="setting.space"
-                :options="options"
-            />
-            </n-form-item>
-            <n-form-item label="Compare">
-            <n-switch v-model:value="setting.showOthers"/>
-            </n-form-item>
-            <n-form-item :label="colorSpace.componentLabels[0]">
-            <n-input :value="selectedComponents[0].toFixed(0)"></n-input>
-            </n-form-item>
-            <n-form-item :label="colorSpace.componentLabels[1]">
-            <n-input :value="selectedComponents[1].toFixed(0)"></n-input>
-            </n-form-item>
-            <n-form-item :label="colorSpace.componentLabels[2]">
-            <n-input :value="selectedComponents[2].toFixed(0)"></n-input>
-            </n-form-item>
-        </n-form>
-    </n-layout-sider>
-    <n-layout-content content-style="padding: 24px;">
-        <!-- <div :style="{margin: '10px'}"></div> -->
+<div className="container">
         <Draggable
             :style="{
                 position: 'relative',
-                width: '500px',
-                height: '500px',
+                height: '250px',
                 backgroundSize: '100%',
                 backgroundImage: `url(${canvasUrl})`
             }"
             :cb="handleDrag"
+            :clamp="true"
         >
             <span
                 className="color-circle color-circle-selected"
                 :style="circleStyle(setting.tmpColor ?? colors[setting.selected])"
             ></span>
-            <template v-if="setting.showOthers">
+            <template v-if="setting.flags.includes('compare')">
                 <template v-for="(c, i) in colors" v-bind:key="i">
                     <span
                         v-if="i !== setting.selected"
                         className="color-circle"
                         :style="circleStyle(c)"
-                    >{{i + 1}}</span>
+                    ></span>
                 </template>
             </template>
         </Draggable>
         <Draggable
             :style="{
                 position: 'relative',
-                width: '500px',
                 height: '10px',
                 backgroundSize: '100%',
                 backgroundImage: `url(${canvasUrl2})`
             }"
             :cb="handleDrag2"
+            :clamp="true"
         >
             <span
                 className="color-circle color-circle-selected"
                 :style="circleStyle2(setting.tmpColor ?? colors[setting.selected])"
             ></span>
-            <template v-if="setting.showOthers">
+            <template v-if="setting.flags.includes('compare')">
                 <template v-for="(c, i) in colors" v-bind:key="i">
                     <span
                         v-if="i !== setting.selected"
                         className="color-circle"
                         :style="circleStyle2(c)"
-                    >{{i + 1}}</span>
+                    ></span>
                 </template>
             </template>
         </Draggable>
-    </n-layout-content>
-</n-layout>
+    <div :style="{display: 'flex'}">
+        <n-button v-on:click="nextColorSpace" size="small" quaternary :style="{width: '50px', marginRight: '5px'}">{{colorSpace.label}}</n-button>
+        <DragInputNumber :min="0" :max="100" v-model:value="setting.tmpNumber"/>
+        <n-input size="small" >
+            <template #suffix>
+                <n-icon color="#000000"><swap-vert-round/></n-icon>
+            </template>
+        </n-input>
+        <n-input size="small" >
+            <template #suffix>
+                <n-icon color="#000000"><swap-vert-round/></n-icon>
+            </template>
+        </n-input>
+    </div>
+    <div :style="{display: 'flex'}">
+        <n-popselect v-model:value="setting.flags" multiple :options="popSelectOptions">
+            <n-button size="small" quaternary :style="{width: '50px', marginRight: '5px'}" #icon><menu-round/></n-button>
+        </n-popselect>
+        <n-input size="small" >
+            <template #suffix>
+                <n-icon color="#000000"><content-copy-sharp/></n-icon>
+            </template>
+        </n-input>
+    </div>
+</div>
+<div :style="{display: 'flex', width: '500px'}">
+    <n-form
+        ref="formRef"
+        label-placement="left"
+        require-mark-placement="right-hanging"
+        :style="{width: '140px', float: 'left'}"
+        size="small"
+        label-width="50"
+    >
+        <n-form-item label="Space">
+        <n-select
+            v-model:value="setting.space"
+            :options="options"
+        />
+        </n-form-item>
+        <n-form-item label="Compare">
+        <n-switch v-model:value="setting.showOthers"/>
+        </n-form-item>
+        <n-form-item :label="colorSpace.componentLabels[0]">
+        <n-input :value="selectedComponents[0].toFixed(0)"></n-input>
+        </n-form-item>
+        <n-form-item :label="colorSpace.componentLabels[1]">
+        <n-input :value="selectedComponents[1].toFixed(0)"></n-input>
+        </n-form-item>
+        <n-form-item :label="colorSpace.componentLabels[2]">
+        <n-input :value="selectedComponents[2].toFixed(0)"></n-input>
+        </n-form-item>
+    </n-form>
+    <div>
+    </div>
+</div>
 </template>
 <style scoped>
+.container {
+    width: 250px;
+    margin-bottom: 20px;
+}
+.container > div {
+    display: flex;
+    margin-bottom: 5px;
+}
 .color-circle {
     transform: translate(-50%, -50%);
     position: absolute;
-    width: 20px;
     user-select: none;
     text-align: center;
-    height: 20px;
-    border: 1px solid #000;
-    border-radius: 10px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #fff;
+    border-radius: 6px;
 }
 .color-circle-selected {
     z-index: 10;
-    border-width: 3px;
+    border-width: 2px;
 }
 </style>
 <script setup lang="ts">
-import { off, on } from 'evtd'
+import { SwapVertRound, ContentCopySharp, MenuRound } from '@vicons/material';
 import Color from "color";
 import _ from "lodash";
 import * as convert from 'color-convert';
@@ -106,8 +138,6 @@ import { computed, CSSProperties, inject, Ref, ref, watch, watchPostEffect } fro
 import { ColorPalette } from "../helpers";
 (window as any).convert = convert;
 (window as any).Color = Color;
-
-const divRef = ref<HTMLDivElement|null>(null)
 
 type Number3 = [number, number, number];
 
@@ -121,24 +151,14 @@ type ColorSpace = {
         colorToXyz: (c: Color) => Number3,
     }
 }
-function handleMouseDown(e: MouseEvent) {
-    if (!divRef.value) return;
-    on('mousemove', document, handleMouseMove);
-    on('mouseup', document, handleMouseUp);
-    handleMouseMove(e);
-}
 
-function handleMouseMove(e: MouseEvent) {
-      const { width, left, height, top } = divRef.value!.getBoundingClientRect()
-      console.log((e.clientX - left)/width, (e.clientY - top)/height);
-}
-function handleMouseUp(e: MouseEvent) {
-    off('mousemove', document, handleMouseMove)
-    off('mouseup', document, handleMouseUp)
-}
+const popSelectOptions = [
+    { label: "compare", value: "compare" },
+    { label: "region", value: "region" },
+]
 
-const colorSpaces = {
-    "rgb": {
+const colorSpaces = [
+    {
         label: "RGB",
         componentLabels: ['R', 'G', 'B'],
         toComponents: (c: Color) => {
@@ -158,7 +178,7 @@ const colorSpaces = {
             }
         }
     } as ColorSpace,
-    "lab": {
+    {
         label: "Lab",
         componentLabels: ['L', 'a', 'b'],
         toComponents: (c: Color) => {
@@ -178,7 +198,7 @@ const colorSpaces = {
             }
         }
     } as ColorSpace,
-    "lch": {
+    {
         label: "Lch",
         componentLabels: ['L', 'c', 'h'],
         toComponents: (c: Color) => {
@@ -198,12 +218,16 @@ const colorSpaces = {
             }
         }
     } as ColorSpace,
-} as const;
+] as const;
 
 const options = _.entries(colorSpaces).map(([k, v]) => ({
     label: v.label,
     value: k,
   }));
+
+function nextColorSpace() {
+    setting.value.space = (setting.value.space + 1) % colorSpaces.length;
+}
 
 const colorSpace = computed(() => colorSpaces[setting.value.space]);
 const selectedColor = computed(() => colors.value[setting.value.selected]);
@@ -238,10 +262,11 @@ const handleDrag2 = (e: DragEvent) => {
 const setting = ref({
     selected: 2,
     tmpColor: undefined as undefined|Color,
-    space: 'rgb' as ColorSpaceName,
+    space: 0,
     fixed: '0' as '0'|'1'|'2',
-    polar: false,
+    flags: [] as string[],
     showOthers: true,
+    tmpNumber: 0,
 });
 const w = 200;
 const h = 200;
@@ -275,6 +300,7 @@ function xyzDistance(xyz1: Number3, xyz2: Number3) {
 }
 
 const canvasUrl = computed(() => {
+    const showRegion = setting.value.flags.includes('region');
     const canvas = document.createElement('canvas');
     canvas.width = 200;
     canvas.height = 200;
@@ -286,7 +312,7 @@ const canvasUrl = computed(() => {
             const xyz = [xi/w, yi/h, oldXyz[2]] as Number3;
             let color = colorSpace.value.preview.xyzToColor(xyz).rgb();
             const testXyz = colorSpace.value.preview.colorToXyz(color);
-            if(xyzDistance(xyz, testXyz) > 0.01) {
+            if(showRegion && xyzDistance(xyz, testXyz) > 0.01) {
                 // color = color.darken(0.1);
                 color = Color.rgb(_.map(color.rgb().array(), x => x*0.7))
             }
@@ -298,6 +324,7 @@ const canvasUrl = computed(() => {
     return canvas.toDataURL();
 });
 const canvasUrl2 = computed(() => {
+    const showRegion = setting.value.flags.includes('region');
     const canvas = document.createElement('canvas');
     canvas.width = 200;
     canvas.height = 1;
@@ -308,8 +335,7 @@ const canvasUrl2 = computed(() => {
         const xyz = [oldXyz[0], oldXyz[1], xi/w] as Number3;
         let color = colorSpace.value.preview.xyzToColor(xyz).rgb();
         const testXyz = colorSpace.value.preview.colorToXyz(color);
-        if(xyzDistance(xyz, testXyz) > 0.01) {
-            // color = color.darken(0.1);
+        if(showRegion && xyzDistance(xyz, testXyz) > 0.01) {
             color = Color.rgb(_.map(color.rgb().array(), x => x*0.7))
         }
         paintPixel(img, xi, 0, color);
