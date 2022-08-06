@@ -145,6 +145,7 @@ const menuOptions = [
   createRouterLinkMenuItem({path: '/about', label: 'About'}),
   createRouterLinkMenuItem({path: '/', label: 'Preview'}),
   createRouterLinkMenuItem({path: '/export', label: 'Export'}),
+  // createRouterLinkMenuItem({path: '/dev', label: 'Dev'}),
   {
     label: 'Guide',
     key: 'Guide',

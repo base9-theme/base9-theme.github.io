@@ -54,6 +54,30 @@
                 </template>
             </template>
         </Draggable>
+        <Draggable
+            :style="{
+                position: 'relative',
+                width: '500px',
+                height: '10px',
+                backgroundSize: '100%',
+                backgroundImage: `url(${canvasUrl2})`
+            }"
+            :cb="handleDrag2"
+        >
+            <span
+                className="color-circle color-circle-selected"
+                :style="circleStyle2(setting.tmpColor ?? colors[setting.selected])"
+            ></span>
+            <template v-if="setting.showOthers">
+                <template v-for="(c, i) in colors" v-bind:key="i">
+                    <span
+                        v-if="i !== setting.selected"
+                        className="color-circle"
+                        :style="circleStyle2(c)"
+                    >{{i + 1}}</span>
+                </template>
+            </template>
+        </Draggable>
     </n-layout-content>
 </n-layout>
 </template>
@@ -199,6 +223,18 @@ const handleDrag = (e: DragEvent) => {
     }
 }
 
+const handleDrag2 = (e: DragEvent) => {
+    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    let newColor = colorSpace.value.preview.xyzToColor([oldXyz[0], oldXyz[1], e.x]);
+
+    if(e.type === 'end') {
+        colors.value[setting.value.selected] = newColor;
+        setting.value.tmpColor = undefined;
+    } else {
+        setting.value.tmpColor = newColor;
+    }
+}
+
 const setting = ref({
     selected: 2,
     tmpColor: undefined as undefined|Color,
@@ -226,6 +262,14 @@ function circleStyle(c: Color): CSSProperties {
     }
 }
 
+function circleStyle2(c: Color): CSSProperties {
+    return {
+        top: `50%`,
+        left: `${colorSpace.value.preview.colorToXyz(c)[2]*100}%`,
+        background: c.hex(),
+    }
+}
+
 function xyzDistance(xyz1: Number3, xyz2: Number3) {
     return Math.hypot(xyz1[0] - xyz2[0], xyz1[1] - xyz2[1], xyz1[2] - xyz2[2]);
 }
@@ -244,10 +288,31 @@ const canvasUrl = computed(() => {
             const testXyz = colorSpace.value.preview.colorToXyz(color);
             if(xyzDistance(xyz, testXyz) > 0.01) {
                 // color = color.darken(0.1);
-                color = Color.rgb(_.map(color.rgb().array(), x => x*0.9))
+                color = Color.rgb(_.map(color.rgb().array(), x => x*0.7))
             }
             paintPixel(img, xi, yi, color);
         }
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.putImageData(img, 0, 0);
+    return canvas.toDataURL();
+});
+const canvasUrl2 = computed(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 1;
+    const ctx = canvas.getContext("2d")!;
+    const img = ctx.createImageData(w,h);
+    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    for(let xi = 0; xi < w; xi++) {
+        const xyz = [oldXyz[0], oldXyz[1], xi/w] as Number3;
+        let color = colorSpace.value.preview.xyzToColor(xyz).rgb();
+        const testXyz = colorSpace.value.preview.colorToXyz(color);
+        if(xyzDistance(xyz, testXyz) > 0.01) {
+            // color = color.darken(0.1);
+            color = Color.rgb(_.map(color.rgb().array(), x => x*0.7))
+        }
+        paintPixel(img, xi, 0, color);
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(img, 0, 0);

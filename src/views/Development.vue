@@ -15,12 +15,15 @@ import {
 } from 'vue';
 import Color from 'color';
 import _ from 'lodash';
+import {tmp} from '../tmp';
+
 // import Ansi from './Ansi.vue';
 
 // import tmp from '..assets'
 
 import type { ColorPalette } from '../helpers';
 
+console.log(tmp);
 const colors = inject('colors') as Ref<ColorPalette>;
 watchPostEffect(() => {
   const absolute = [
@@ -38,6 +41,7 @@ watchPostEffect(() => {
   // console.log(colors.value[0].hex().substring(1)+"-"+colors.value[1].hex().substring(1)+"-"+colors1.map(c=>c.hex().substring(1)).join("-"));
   run(colors1, absolute);
 })
+
 
 function run(colors1: Color[], colors2: Color[]) {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
