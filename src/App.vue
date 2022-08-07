@@ -18,9 +18,8 @@
             show-trigger="arrow-circle"
             content-style="padding: 24px;"
             bordered
-          > <color-palette/>
-            <base-16-scheme-picker/>
-            <import/>
+          >
+            <color-palette/>
           </n-layout-sider>
           <n-layout-content>
             <router-view  :key="$route.path" v-bind:style="cssVariable"/>
@@ -66,7 +65,7 @@ const router = useRouter();
 const DEFAULT_PALETTE = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
 function getDefaultPalette() {
   const palette = route.params.palette;
-  if (typeof palette !== 'string' || !PALETTE_REGEX.test(palette)) {
+  if (!(typeof palette === 'string' && PALETTE_REGEX.test(palette))) {
     return DEFAULT_PALETTE;
   }
   return palette;
@@ -98,8 +97,8 @@ watch(
   },
 );
 
-watch(colors, async (colorsNew) => {
-  const paletteString = toPaletteString(colorsNew);
+watch(() => colors.value.map(c => c.hex()).join(), async () => {
+  const paletteString = toPaletteString(colors.value);
   if (!paletteString) {
     return;
   }

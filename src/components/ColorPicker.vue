@@ -12,11 +12,11 @@
         >
             <span
                 className="color-circle color-circle-selected"
-                :style="circleStyle(setting.tmpColor ?? colors[setting.selected])"
+                :style="circleStyle(setting.tmpColor ?? color)"
             ></span>
             <template v-if="setting.flags.includes('compare')">
                 <span
-                    v-for="(c, i) in otherColors" v-bind:key="i"
+                    v-for="(c, i) in props.otherColors" v-bind:key="i"
                     className="color-circle"
                     :style="circleStyle(c.color)"
                 >{{c.label}}</span>
@@ -34,14 +34,13 @@
         >
             <span
                 className="color-circle color-circle-selected"
-                :style="circleStyle2(setting.tmpColor ?? colors[setting.selected])"
+                :style="circleStyle2(setting.tmpColor ?? color)"
             ></span>
             <template v-if="setting.flags.includes('compare')">
-                <template v-for="(c, i) in colors" v-bind:key="i">
+                <template v-for="(c, i) in otherColors" v-bind:key="i">
                     <span
-                        v-if="i !== setting.selected"
                         className="color-circle"
-                        :style="circleStyle2(c)"
+                        :style="circleStyle2(c.color)"
                     ></span>
                 </template>
             </template>
@@ -63,42 +62,10 @@
         </n-input>
     </div>
 </div>
-<div :style="{display: 'flex', width: '500px'}">
-    <n-form
-        ref="formRef"
-        label-placement="left"
-        require-mark-placement="right-hanging"
-        :style="{width: '140px', float: 'left'}"
-        size="small"
-        label-width="50"
-    >
-        <n-form-item label="Space">
-        <!-- <n-select
-            v-model:value="setting.space"
-            :options="options"
-        /> -->
-        </n-form-item>
-        <n-form-item label="Compare">
-        <!-- <n-switch v-model:value="setting.showOthers"/> -->
-        </n-form-item>
-        <n-form-item :label="colorSpace.componentLabels[0]">
-        <n-input :value="components[0].toFixed(0)"></n-input>
-        </n-form-item>
-        <n-form-item :label="colorSpace.componentLabels[1]">
-        <n-input :value="components[1].toFixed(0)"></n-input>
-        </n-form-item>
-        <n-form-item :label="colorSpace.componentLabels[2]">
-        <n-input :value="components[2].toFixed(0)"></n-input>
-        </n-form-item>
-    </n-form>
-    <div>
-    </div>
-</div>
 </template>
 <style scoped>
 .container {
     width: 250px;
-    margin-bottom: 20px;
 }
 .container > div {
     display: flex;
@@ -232,7 +199,6 @@ const props = defineProps<{
 const emit = defineEmits(["update:color"]);
 
 const setting = ref({
-    selected: 2,
     tmpColor: undefined as undefined|Color,
     colorSpaceIndex: 0,
     flags: [] as FLAG[],
@@ -268,17 +234,15 @@ watch(props, () => {
     hex.value = props.color.hex();
 })
 
-const selectedColor = computed(() => colors.value[setting.value.selected]);
-const selectedComponents = computed(() => colorSpace.value.toComponents(setting.value.tmpColor ?? selectedColor.value));
 type ColorSpaceName = keyof typeof COLOR_SPACES;
 
 const colors = inject('colors') as Ref<ColorPalette>;
 const handleDrag = (e: DragEvent) => {
-    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    const oldXyz = colorSpace.value.preview.colorToXyz(props.color);
     let newColor = colorSpace.value.preview.xyzToColor([e.x, e.y, oldXyz[2]]);
 
     if(e.type === 'end') {
-        colors.value[setting.value.selected] = newColor;
+        emit('update:color', newColor);
         setting.value.tmpColor = undefined;
     } else {
         setting.value.tmpColor = newColor;
@@ -286,11 +250,11 @@ const handleDrag = (e: DragEvent) => {
 }
 
 const handleDrag2 = (e: DragEvent) => {
-    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    const oldXyz = colorSpace.value.preview.colorToXyz(props.color);
     let newColor = colorSpace.value.preview.xyzToColor([oldXyz[0], oldXyz[1], e.x]);
 
     if(e.type === 'end') {
-        colors.value[setting.value.selected] = newColor;
+        emit('update:color', newColor);
         setting.value.tmpColor = undefined;
     } else {
         setting.value.tmpColor = newColor;
@@ -337,7 +301,7 @@ const canvasUrl = computed(() => {
     canvas.height = SAMPLE_SIZE;
     const ctx = canvas.getContext("2d")!;
     const img = ctx.createImageData(w,h);
-    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    const oldXyz = colorSpace.value.preview.colorToXyz(props.color);
     for(let xi = 0; xi < w; xi++) {
         for(let yi = 0; yi < h; yi++) {
             const xyz = [xi/w, yi/h, oldXyz[2]] as Number3;
@@ -361,7 +325,7 @@ const canvasUrl2 = computed(() => {
     canvas.height = 1;
     const ctx = canvas.getContext("2d")!;
     const img = ctx.createImageData(w,h);
-    const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
+    const oldXyz = colorSpace.value.preview.colorToXyz(props.color);
     for(let xi = 0; xi < w; xi++) {
         const xyz = [oldXyz[0], oldXyz[1], xi/w] as Number3;
         let color = colorSpace.value.preview.xyzToColor(xyz).rgb();
