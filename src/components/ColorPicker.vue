@@ -4,7 +4,7 @@
             :style="{
                 position: 'relative',
                 height: '250px',
-                backgroundSize: '100%',
+                backgroundSize: '100% 100%',
                 backgroundImage: `url(${canvasUrl})`
             }"
             :cb="handleDrag"
@@ -15,13 +15,11 @@
                 :style="circleStyle(setting.tmpColor ?? colors[setting.selected])"
             ></span>
             <template v-if="setting.flags.includes('compare')">
-                <template v-for="(c, i) in colors" v-bind:key="i">
-                    <span
-                        v-if="i !== setting.selected"
-                        className="color-circle"
-                        :style="circleStyle(c)"
-                    ></span>
-                </template>
+                <span
+                    v-for="(c, i) in otherColors" v-bind:key="i"
+                    className="color-circle"
+                    :style="circleStyle(c.color)"
+                >{{c.label}}</span>
             </template>
         </Draggable>
         <Draggable
@@ -50,25 +48,17 @@
         </Draggable>
     <div :style="{display: 'flex'}">
         <n-button v-on:click="nextColorSpace" size="small" quaternary :style="{width: '50px', marginRight: '5px'}">{{colorSpace.label}}</n-button>
-        <DragInputNumber :min="0" :max="100" v-model:value="setting.tmpNumber"/>
-        <n-input size="small" >
-            <template #suffix>
-                <n-icon color="#000000"><swap-vert-round/></n-icon>
-            </template>
-        </n-input>
-        <n-input size="small" >
-            <template #suffix>
-                <n-icon color="#000000"><swap-vert-round/></n-icon>
-            </template>
-        </n-input>
+        <DragInputNumber :min="colorSpace.ranges[0].min" :max="colorSpace.ranges[0].max" :value="components[0]" @update:value="updateComponents[0]"/>
+        <DragInputNumber :min="colorSpace.ranges[1].min" :max="colorSpace.ranges[1].max" :value="components[1]" @update:value="updateComponents[1]"/>
+        <DragInputNumber :min="colorSpace.ranges[2].min" :max="colorSpace.ranges[2].max" :value="components[2]" @update:value="updateComponents[2]"/>
     </div>
     <div :style="{display: 'flex'}">
-        <n-popselect v-model:value="setting.flags" multiple :options="popSelectOptions">
+        <n-popselect v-model:value="setting.flags" multiple :options="POP_SELECT_OPTIONS">
             <n-button size="small" quaternary :style="{width: '50px', marginRight: '5px'}" #icon><menu-round/></n-button>
         </n-popselect>
-        <n-input size="small" >
+        <n-input v-model:value="hex" @focusout="hexFocusout" size="small" >
             <template #suffix>
-                <n-icon color="#000000"><content-copy-sharp/></n-icon>
+                <n-icon :style="{cursor: 'pointer'}" @click="hexCopy" color="#000000"><content-copy-sharp/></n-icon>
             </template>
         </n-input>
     </div>
@@ -83,22 +73,22 @@
         label-width="50"
     >
         <n-form-item label="Space">
-        <n-select
+        <!-- <n-select
             v-model:value="setting.space"
             :options="options"
-        />
+        /> -->
         </n-form-item>
         <n-form-item label="Compare">
-        <n-switch v-model:value="setting.showOthers"/>
+        <!-- <n-switch v-model:value="setting.showOthers"/> -->
         </n-form-item>
         <n-form-item :label="colorSpace.componentLabels[0]">
-        <n-input :value="selectedComponents[0].toFixed(0)"></n-input>
+        <n-input :value="components[0].toFixed(0)"></n-input>
         </n-form-item>
         <n-form-item :label="colorSpace.componentLabels[1]">
-        <n-input :value="selectedComponents[1].toFixed(0)"></n-input>
+        <n-input :value="components[1].toFixed(0)"></n-input>
         </n-form-item>
         <n-form-item :label="colorSpace.componentLabels[2]">
-        <n-input :value="selectedComponents[2].toFixed(0)"></n-input>
+        <n-input :value="components[2].toFixed(0)"></n-input>
         </n-form-item>
     </n-form>
     <div>
@@ -119,14 +109,17 @@
     position: absolute;
     user-select: none;
     text-align: center;
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     border: 1px solid #fff;
-    border-radius: 6px;
+    border-radius: 4px;
 }
 .color-circle-selected {
     z-index: 10;
-    border-width: 2px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 6px;
 }
 </style>
 <script setup lang="ts">
@@ -136,6 +129,7 @@ import _ from "lodash";
 import * as convert from 'color-convert';
 import { computed, CSSProperties, inject, Ref, ref, watch, watchPostEffect } from "vue";
 import { ColorPalette } from "../helpers";
+import { useMessage } from 'naive-ui';
 (window as any).convert = convert;
 (window as any).Color = Color;
 
@@ -144,6 +138,7 @@ type Number3 = [number, number, number];
 type ColorSpace = {
     readonly label: string,
     readonly componentLabels: [string, string, string],
+    readonly ranges: [{min: number, max: number},{min: number, max: number},  {min: number, max: number}],
     toComponents: (c: Color) => Number3,
     fromComponents: (components: Number3) => Color,
     preview: {
@@ -152,15 +147,18 @@ type ColorSpace = {
     }
 }
 
-const popSelectOptions = [
+const POP_SELECT_OPTIONS = [
     { label: "compare", value: "compare" },
     { label: "region", value: "region" },
-]
+] as const;
 
-const colorSpaces = [
+type FLAG = (typeof POP_SELECT_OPTIONS)[number]['value'];
+
+const COLOR_SPACES = [
     {
         label: "RGB",
         componentLabels: ['R', 'G', 'B'],
+        ranges: [{min: 0, max: 255}, {min: 0, max: 255},  {min: 0, max: 255}],
         toComponents: (c: Color) => {
             return c.rgb().array() as Number3;
         },
@@ -181,6 +179,7 @@ const colorSpaces = [
     {
         label: "Lab",
         componentLabels: ['L', 'a', 'b'],
+        ranges: [{min: 0, max: 100}, {min: -128, max: 127}, {min: -128, max: 127}],
         toComponents: (c: Color) => {
             return c.lab().array() as Number3;
         },
@@ -201,6 +200,7 @@ const colorSpaces = [
     {
         label: "Lch",
         componentLabels: ['L', 'c', 'h'],
+        ranges: [{min: 0, max: 100}, {min: 0, max: 133}, {min: 0, max: 360}],
         toComponents: (c: Color) => {
             return c.lch().array() as Number3;
         },
@@ -220,19 +220,57 @@ const colorSpaces = [
     } as ColorSpace,
 ] as const;
 
-const options = _.entries(colorSpaces).map(([k, v]) => ({
-    label: v.label,
-    value: k,
-  }));
-
 function nextColorSpace() {
-    setting.value.space = (setting.value.space + 1) % colorSpaces.length;
+    setting.value.colorSpaceIndex = (setting.value.colorSpaceIndex + 1) % COLOR_SPACES.length;
 }
 
-const colorSpace = computed(() => colorSpaces[setting.value.space]);
+const props = defineProps<{
+    color: Color,
+    otherColors: { color: Color, label: string }[],
+}>();
+
+const emit = defineEmits(["update:color"]);
+
+const setting = ref({
+    selected: 2,
+    tmpColor: undefined as undefined|Color,
+    colorSpaceIndex: 0,
+    flags: [] as FLAG[],
+    tmpNumber: 0,
+});
+
+const colorSpace = computed(() => COLOR_SPACES[setting.value.colorSpaceIndex]);
+const components = computed(() => colorSpace.value.toComponents(setting.value.tmpColor ?? props.color));
+const updateComponents = _.times(3, (i) => ((n: number) => {
+    const cs = components.value.slice() as Number3;
+    cs[i] = n;
+    emit('update:color', colorSpace.value.fromComponents(cs))
+}));
+
+const hex = ref(props.color.hex());
+const message = useMessage();
+function hexFocusout() {
+    console.log(hex.value);
+    if(hex.value.length === 0) {
+        return;
+    }
+    try {
+        emit('update:color', Color(hex.value));
+    } catch(e) {
+
+    }
+}
+function hexCopy() {
+  navigator.clipboard.writeText(hex.value);
+  message.success('Copied');
+}
+watch(props, () => {
+    hex.value = props.color.hex();
+})
+
 const selectedColor = computed(() => colors.value[setting.value.selected]);
 const selectedComponents = computed(() => colorSpace.value.toComponents(setting.value.tmpColor ?? selectedColor.value));
-type ColorSpaceName = keyof typeof colorSpaces;
+type ColorSpaceName = keyof typeof COLOR_SPACES;
 
 const colors = inject('colors') as Ref<ColorPalette>;
 const handleDrag = (e: DragEvent) => {
@@ -259,17 +297,9 @@ const handleDrag2 = (e: DragEvent) => {
     }
 }
 
-const setting = ref({
-    selected: 2,
-    tmpColor: undefined as undefined|Color,
-    space: 0,
-    fixed: '0' as '0'|'1'|'2',
-    flags: [] as string[],
-    showOthers: true,
-    tmpNumber: 0,
-});
-const w = 200;
-const h = 200;
+const SAMPLE_SIZE = 100;
+const w = SAMPLE_SIZE;
+const h = SAMPLE_SIZE;
 
 function paintPixel(img: ImageData, x: number, y: number, c: Color) {
     const index = 4 * (y*w + x);
@@ -299,11 +329,12 @@ function xyzDistance(xyz1: Number3, xyz2: Number3) {
     return Math.hypot(xyz1[0] - xyz2[0], xyz1[1] - xyz2[1], xyz1[2] - xyz2[2]);
 }
 
+
 const canvasUrl = computed(() => {
     const showRegion = setting.value.flags.includes('region');
     const canvas = document.createElement('canvas');
-    canvas.width = 200;
-    canvas.height = 200;
+    canvas.width = SAMPLE_SIZE;
+    canvas.height = SAMPLE_SIZE;
     const ctx = canvas.getContext("2d")!;
     const img = ctx.createImageData(w,h);
     const oldXyz = colorSpace.value.preview.colorToXyz(selectedColor.value);
@@ -326,7 +357,7 @@ const canvasUrl = computed(() => {
 const canvasUrl2 = computed(() => {
     const showRegion = setting.value.flags.includes('region');
     const canvas = document.createElement('canvas');
-    canvas.width = 200;
+    canvas.width = SAMPLE_SIZE;
     canvas.height = 1;
     const ctx = canvas.getContext("2d")!;
     const img = ctx.createImageData(w,h);

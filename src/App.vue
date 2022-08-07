@@ -65,7 +65,7 @@ const route = useRoute();
 const router = useRouter();
 const DEFAULT_PALETTE = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
 function getDefaultPalette() {
-  const palette = route.params.base9;
+  const palette = route.params.palette;
   if (typeof palette !== 'string' || !PALETTE_REGEX.test(palette)) {
     return DEFAULT_PALETTE;
   }
@@ -73,7 +73,7 @@ function getDefaultPalette() {
 }
 
 function hasBase9Param(r: RouteLocation) {
-  return r.query.base9 !== undefined;
+  return r.query.palette !== undefined;
 }
 
 router.beforeEach((to, from, next) => {
@@ -88,7 +88,7 @@ router.beforeEach((to, from, next) => {
 const colors = ref(_.map(getDefaultPalette().split('-'), (s) => Color(`#${s}`)) as ColorPalette);
 
 watch(
-  () => route.query.base9,
+  () => route.query.palette,
   (palette) => {
     if (typeof palette !== 'string') {
       return;
@@ -104,7 +104,7 @@ watch(colors, async (colorsNew) => {
     return;
   }
   await router.replace({
-    query: { base9: paletteString },
+    query: { palette: paletteString },
   });
 });
 const menuRaw = [

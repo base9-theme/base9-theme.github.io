@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ColorPicker></ColorPicker>
+    <ColorPicker v-model:color="colors[2]" :otherColors="colors.slice(3).map((c, i) => ({color: c, label: ''}))"></ColorPicker>
     <a-button>a</a-button>
     <h2>Absolute Colors</h2>
     <canvas id="canvas" width="500" height="500"></canvas>

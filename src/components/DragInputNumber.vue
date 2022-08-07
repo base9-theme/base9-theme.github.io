@@ -1,14 +1,15 @@
 <template>
-<n-input v-model:value="localValue" size="small" >
+<n-input :value="localValue" @update:value="updateValue" size="small" >
     <template #suffix>
-        <Draggable :relative="true" :cb="handleDrag">
-            <n-icon color="#000000"><swap-vert-round/></n-icon>
+        <Draggable :style="{display: 'inline-flex'}" :relative="true" :cb="handleDrag">
+            <n-icon :style="{cursor: 'ns-resize'}" color="#000000"><swap-vert-round/></n-icon>
         </Draggable>
     </template>
 </n-input>
 </template>
 <script setup lang="ts">
 import { SwapVertRound } from '@vicons/material';
+import _ from 'lodash';
 import { ref, watch } from 'vue';
 import type { DragEvent } from './Draggable.vue';
 const props = defineProps<{
@@ -17,24 +18,38 @@ const props = defineProps<{
     value: number,
 }>();
 
-const emit = defineEmits(['value']);
-const localValue = ref(props.value);
+const emit = defineEmits(['update:value']);
+const localValue = ref(String(props.value));
 
-watch(() => props.value, () => {
-    localValue.value = props.value;
-    emit('value', localValue.value);
-});
-
-const MAX = -5;
-const MIN = 5;
-function handleDrag(e: DragEvent) {
-    const value = (e.y - MIN) / (MAX-MIN) * (props.max - props.min) + props.min;
-    emit('value', localValue.value);
+function toString(n: number): string {
+    return n.toFixed(0);
 }
-watch(() => localValue.value, () => {
+
+function updateValue(s: string) {
+    localValue.value = s;
     if(isNaN(Number(localValue.value))) {
         return;
     }
-    emit('value', localValue.value);
+    emit('update:value', Number(localValue.value));
+}
+
+watch(() => props.value, () => {
+    localValue.value = toString(props.value);
 });
+
+const K = 10;
+const dragged = ref(0);
+function handleDrag(e: DragEvent) {
+    if(e.type === 'begin') {
+        dragged.value = props.value;
+    }
+
+    const value = _.clamp(- e.y / K * (props.max - props.min) + dragged.value, props.min, props.max);
+    console.log(value);
+    
+    localValue.value = toString(value);
+    if(e.type === 'end') {
+        emit('update:value', value);
+    }
+}
 </script>
