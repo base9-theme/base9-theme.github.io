@@ -24,18 +24,24 @@
         v-for="({ bg, fg }, i) in previewList"
         v-bind:key="i"
       >
-        {{ previewNumber(bg, fg).toFixed(3) }}
+        {{ previewNumber(bg, fg).toFixed(1) }}
       </div>
     </div>
     <h2>ANSI Colors</h2>
     <div class="ansi-list">
       <div
         class="ansi-cell"
+        v-for="i in _.range(8)"
+        v-bind:key="i"
+      >
+        {{ ansiLabel[i] }}
+      </div>
+      <div
+        class="ansi-cell"
         :style="{ background: c }"
         v-for="(c, i) in ansiList"
         v-bind:key="i"
       >
-        {{ ansiLabel[i] }}
       </div>
     </div>
   </div>
@@ -83,6 +89,7 @@ const previewListColumns: [
   ['p10 bg', (c, colors) => colors[`c${c}`].p10, (c, colors) => colors.foreground.p100],
   ['p25 bg', (c, colors) => colors[`c${c}`].p25, (c, colors) => colors.foreground.p100],
   ['p50 bg', (c, colors) => colors[`c${c}`].p50, (c, colors) => colors.foreground.p100],
+  ['p75 inv.', (c, colors) => colors[`c${c}`].p75, (c, colors) => colors.background],
   ['p75', (c, colors) => colors.background, (c, colors) => colors[`c${c}`].p75],
   ['p100', (c, colors) => colors.background, (c, colors) => colors[`c${c}`].p100],
   ['p125', (c, colors) => colors.background, (c, colors) => colors[`c${c}`].p125],

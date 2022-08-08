@@ -38,6 +38,7 @@ export type ColorPalette = [
 
 export const PALETTE_REGEX = /^([0-9a-fA-F]{6}-){8}[0-9a-fA-F]{6}$/;
 
+
 export function getColors16FromSchemeObj(schemeObj: Dictionary<any>) {
   const colors16 = _.map(base24Digits, (v, k) => {
     const colorStr = schemeObj.default[v];
@@ -47,6 +48,10 @@ export function getColors16FromSchemeObj(schemeObj: Dictionary<any>) {
     return Color(`#${colorStr}`);
   });
   return colors16;
+}
+
+export function contrastColor(c: Color) {
+  return c.l() < 50 ? Color("#ffffff") : Color("#000000");
 }
 
 export function getColorsFromBase16(colors: Color[]): ColorPalette {
