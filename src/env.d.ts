@@ -11,7 +11,20 @@ declare module '*.md' {
   const Component: ComponentOptions
   export default Component
 }
+// declare module 'themes/*.yml' {
+//   const s: Array<{
+//     name: string,
+//     author: string,
+//     palette: string,
+//   }>;
+//   export default s;
+// }
 declare module '*.yaml' {
+  const s: any;
+  export default s;
+}
+
+declare module '*.yml' {
   const s: any;
   export default s;
 }

@@ -5,14 +5,15 @@
 
 </style>
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 import { render } from '../helpers';
 import type { ColorPalette } from '../helpers';
+import { renderString } from 'base9-builder';
 import logoTemplate from '../assets/templates/logo.svg.mustache';
 
 const props = defineProps<{
-    colors: ColorPalette,
+    palette: string,
     size?: number|string,
 }>();
-const content = render(logoTemplate, props.colors);
+const content = computed(() => renderString(props.palette, logoTemplate));
 </script>

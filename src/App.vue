@@ -1,47 +1,28 @@
 <template>
-<n-theme-editor>
-  <n-config-provider :hljs="hljs">
+<n-config-provider class="main" v-bind:style="cssVariable" :theme-overrides="themeOverrides">
   <n-message-provider>
-    <n-layout>
-      <n-layout-header bordered style="display: flex; height: 64px; align-items: center;">
-        <logo :size="32" :colors="colors"/>
-        <!-- <span style="width: 32px; height: 32px;" v-html="svgString"></span> -->
-        <span style="font-size: 32px">Base9</span>
-        <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
-      </n-layout-header>
-      <n-layout-content>
-        <n-layout has-sider>
-          <n-layout-sider
-            collapse-mode="transform"
-            :collapsed-width="0"
-            :width="240"
-            show-trigger="arrow-circle"
-            content-style="padding: 24px;"
-            bordered
-          >
-            <color-palette/>
-          </n-layout-sider>
-          <n-layout-content>
-            <router-view  :key="$route.path" v-bind:style="cssVariable"/>
-          </n-layout-content>
-        </n-layout>
-      </n-layout-content>
-    </n-layout>
-    <div>
-    <!-- <n-button-group vertical style="width: 100%">
-    </n-button-group> -->
-    </div>
+    <router-view  :key="$route.path" />
   </n-message-provider>
-  </n-config-provider>
-</n-theme-editor>
+</n-config-provider>
 </template>
 <style>
+a {
+  text-decoration: none;
+  color: var(--base9-primary-p100);
+}
+</style>
+<style scoped>
+.main {
+  height: 100vh;
+}
 </style>
 <script setup lang="ts">
+import { NConfigProvider, GlobalThemeOverrides } from 'naive-ui'
+
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import {
-  computed, h, provide, Ref, ref, watch,
+  computed, h, provide, reactive, Ref, ref, watch,
 } from 'vue';
 import hljs from 'highlight.js/lib/core';
 import Color from 'color';
@@ -54,15 +35,19 @@ import type { RouteLocation } from 'vue-router';
 import Base16SchemePicker from './components/Base16SchemePicker.vue';
 import Import from './components/Import.vue';
 import Logo from './components/Logo.vue';
-import { toPaletteString, PALETTE_REGEX, getCssVariableName } from './helpers';
-import type { ColorPalette } from './helpers';
+import { toPaletteString, PALETTE_REGEX, getCssVariableName, getCssVariableContrastName, contrastColor, N9, I9, DEFAULT_PALETTE } from './helpers';
+import type { ColorPalette, ShadesFormatted } from './helpers';
 import logoTemplate from './assets/templates/logo.svg.mustache';
 
-import { renderString } from "base9-builder";
+import { renderString, getData } from "base9-builder";
+import { Formatted } from "base9-builder";
+import { ConfigProvider } from 'ant-design-vue/lib/components';
+import { Palette, palette_key } from './helper2';
 
 const route = useRoute();
 const router = useRouter();
-const DEFAULT_PALETTE = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
+// const DEFAULT_PALETTE = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
+
 function getDefaultPalette() {
   const palette = route.params.palette;
   if (!(typeof palette === 'string' && PALETTE_REGEX.test(palette))) {
@@ -83,84 +68,119 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-const colors = ref(_.map(getDefaultPalette().split('-'), (s) => Color(`#${s}`)) as ColorPalette);
+// const palette = ref(getDefaultPalette());
+const palette = new Palette(getDefaultPalette());
+provide('palette', palette);
+provide(palette_key, palette);
 
 watch(
   () => route.query.palette,
-  (palette) => {
-    if (typeof palette !== 'string') {
+  (newPalette) => {
+    if (typeof newPalette !== 'string') {
+      palette.palette.value = DEFAULT_PALETTE;
       return;
     }
-    const newColors = _.map(palette.split('-'), (s) => Color(`#${s}`)) as ColorPalette;
-    colors.value = newColors;
+
+    if(!PALETTE_REGEX.test(newPalette)) {
+      return;
+    }
+
+    palette.palette.value = newPalette;
   },
 );
 
-watch(() => colors.value.map(c => c.hex()).join(), async () => {
-  const paletteString = toPaletteString(colors.value);
-  if (!paletteString) {
-    return;
-  }
+watch(() => palette.palette.value, async () => {
   await router.replace({
-    query: { palette: paletteString },
+    query: { palette: palette.palette.value },
   });
 });
-const menuRaw = [
-  {
-    label: 'About',
-    path: '/about',
-  },
-  {
-    label: 'Preview',
-    path: '/',
-  },
-  {
-    label: 'Export',
-    path: '/export',
-  },
-];
 
-const guideRaw = [
-  {
-    label: 'Template',
-    path: 'template',
-  },
-]
+const colorData = computed(() => getData(palette.palette.value))
+provide('colorData', colorData);
+const themeOverrides: Ref<GlobalThemeOverrides> = computed(() => {
+  const M = colorData.value;
+  const H = (c: Formatted) => `#${c.hex}`;
+  console.log(H(M.primary.p100));
+  return {
+    common: {
+      borderRadius: '0px',
+      baseColor: H(M.background),
+      bodyColor: H(M.background),
+      cardColor: H(M.background),
+      primaryColor: H(M.primary.p100),
+      primaryColorHover: H(M.primary.p100),
+      primaryColorPressed: H(M.primary.p75),
+      primaryColorSuppl: H(M.red.p100),
+      // primaryColorSuppl: H(M.primary.p50),
+      textColor: H(M.foreground.p100),
+      textColor1: H(M.foreground.p100),
+      textColor2: H(M.foreground.p100),
+      dividerColor: H(M.foreground.p25),
+      borderColor: H(M.foreground.p50),
+      popoverColor: H(M.foreground.p10),
+      hoverColor: H(M.primary.p25),
+      // borderColor: H(M.background),
+      closeIconColor: H(M.foreground.p75),
+      closeIconColorHover: H(M.foreground.p100),
+      closeIconColorPressed: H(M.foreground.p75),
 
-function createRouterLinkMenuItem({path, label}: {path: string, label: string}) {
-   return {
-     label: () => h(
-      RouterLink,
-      {
-        to: { path },
-      },
-      { default: () => label },
-     ),
-     key: label,
-   }
-}
-const menuOptions = [
-  createRouterLinkMenuItem({path: '/about', label: 'About'}),
-  createRouterLinkMenuItem({path: '/', label: 'Preview'}),
-  createRouterLinkMenuItem({path: '/export', label: 'Export'}),
-  // createRouterLinkMenuItem({path: '/dev', label: 'Dev'}),
-  {
-    label: 'Guide',
-    key: 'Guide',
-    children: [
-      createRouterLinkMenuItem({path: '/guide/color_palette', label: 'Color Palette'}),
-    ]
-  }
-];
+      clearIconColor: H(M.foreground.p75),
+      clearIconColorHover: H(M.foreground.p100),
+      clearIconColorPressed: H(M.foreground.p75),
+      inputColor: H(M.background),
+      // hoverColor: '#FF0000', 
+      // borderColor: H(M.red.p100),
+      // hoverColor: "#ff0000",
+      // actionColor: H(M.red.p100),
+    },
+    Button: {
+      // textColor: H(M.background),
+      colorQuaternary: H(M.background),
+      colorQuaternaryHover: H(M.foreground.p25),
+      colorQuaternaryPressed: H(M.foreground.p10),
+    },
+    Tag: {
+      colorBordered: H(M.background),
+      color: H(M.background),
+      closeIconColor: H(M.foreground.p75),
+      closeIconColorHover: H(M.foreground.p100),
+      closeIconColorPressed: H(M.foreground.p75),
+      textColorPrimary: H(M.background),
+      colorPrimary: H(M.secondary.p75),
+    },
+    Tooltip: {
+      color: H(M.foreground.p10),
+      textColor: H(M.foreground.p100),
+    }
+  };
+});
+
 const activeKey = ref(null);
-provide('colors', colors);
-const svgString = computed(() => renderString(toPaletteString(colors.value), logoTemplate));
-const cssVariable = computed(() => Object.fromEntries(
-  _.map(colors.value, (c, i) => [getCssVariableName(i), c.hex()]),
-));
 
-// window['Color'] = Color;
-// window['colors'] = colors;
-// `<path fill="#0F0" d="M${a1} 0H${a0-a1}C${a0-a2} 0 ${a0} ${a2} ${a0} ${a1}V${a0-a1}C${a0} ${a0-a2} ${a0-a2} ${a0} ${a0-a1} ${a0}H${a1}C${a2} ${a0} 0 ${a0-a2} 0 ${a0-a1}V${a1}C0 ${a2} ${a2} 0 ${a1} 0 z" />`
+function cssHelper(c: Formatted, i: number): [string, string][] {
+  return [
+    [`--base9-${i}`, "#"+c.hex],
+    [`--base9-${i}-contrast`, contrastColor(Color("#" + c.hex)).hex()],
+    // [`--base9-${i}-p10`, "#"+c.p10.hex],
+    // [`--base9-${i}-p25`, "#"+c.p25.hex],
+    // [`--base9-${i}-p50`, "#"+c.p50.hex],
+    // [`--base9-${i}-p75`, "#"+c.p75.hex],
+    // [`--base9-${i}-p100`, "#"+c.p100.hex],
+    // [`--base9-${i}-p125`, "#"+c.p100.hex],
+  ]
+}
+
+const cssVariable = computed(() => {
+  const M = colorData.value;
+  const entries: [string, string][] = _.flatMap(
+    _.range(N9),
+    i => cssHelper(M.base9[`c${i as I9}`], i));
+  M.PROGRAMMABLE.forEach(row => {
+    if(row.color) {
+      entries.push(["--base9-" + row.path.dotted.replaceAll(".", "-"), "#" + row.color.hex])
+    }
+  })
+  return Object.fromEntries(entries);
+});
+
 </script>

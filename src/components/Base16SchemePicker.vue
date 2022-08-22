@@ -26,6 +26,20 @@ const message = useMessage();
 
 const schemesRaw = import.meta.globEager('../assets/schemes-base16/*.yaml');
 
+const options = _.entries(schemesRaw).map(([k, v], i) => {
+  const key = ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k) || [])[1]);
+  const colors16 = getColors16FromSchemeObj(v);
+  return {
+    label: key,
+    value: i,
+    data: {
+      name: key,
+      colors16,
+      colors: getColorsFromBase16(colors16),
+    },
+  };
+});
+
 // let tmp = ""
 // _.entries(schemesRaw).map(([k, v], i) => {
 //   const colors16 = getColors16FromSchemeObj(v);
@@ -40,19 +54,6 @@ const schemesRaw = import.meta.globEager('../assets/schemes-base16/*.yaml');
 // })
 // console.log(tmp)
 
-const options = _.entries(schemesRaw).map(([k, v], i) => {
-  const key = ((/\.\.\/assets\/schemes-base16\/(.*)\.yaml/.exec(k) || [])[1]);
-  const colors16 = getColors16FromSchemeObj(v);
-  return {
-    label: key,
-    value: i,
-    data: {
-      name: key,
-      colors16,
-      colors: getColorsFromBase16(colors16),
-    },
-  };
-});
 
 const renderLabel = function (option: typeof options[number]) {
   return [

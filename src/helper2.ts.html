@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>~/git/base9-theme.github.io/src/helper2.ts.html</title>
+<meta name="Generator" content="Vim/9.0">
+<meta name="plugin-version" content="vim8.1_v2">
+<meta name="syntax" content="typescript">
+<meta name="settings" content="use_css,pre_wrap,no_foldcolumn,expand_tabs,prevent_copy=,use_input_for_pc=fallback">
+<meta name="colorscheme" content="base9">
+<style>
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #e0e5c8; background-color: #16161d; }
+body { font-family: monospace; color: #e0e5c8; background-color: #16161d; }
+* { font-size: 1em; }
+.Special { color: #ceaa7a; }
+.Statement { color: #b0b47a; }
+.Function { color: #93bc95; }
+.String { color: #cba8b3; }
+.Constant { color: #93bc95; }
+.Identifier { color: #e0e5c8; }
+.Type { color: #b0b47a; }
+-->
+</style>
+</head>
+<body>
+<pre id='vimCodeElement'>
+<span class="Statement">import</span> <span class="Function">{</span> computed<span class="Statement">,</span> ref <span class="Function">}</span> <span class="Statement">from</span> <span class="String">&quot;vue&quot;</span><span class="Statement">;</span>
+<span class="Statement">import</span> <span class="Statement">type</span> <span class="Function">{</span> Ref<span class="Statement">,</span> WritableComputedRef<span class="Statement">,</span> InjectionKey <span class="Function">}</span> <span class="Statement">from</span> <span class="String">&quot;vue&quot;</span><span class="Statement">;</span>
+<span class="Statement">import</span> <span class="Function">{</span> I9<span class="Statement">,</span> N9 <span class="Function">}</span> <span class="Statement">from</span> <span class="String">&quot;./helpers&quot;</span><span class="Statement">;</span>
+<span class="Statement">import</span> Color <span class="Statement">from</span> <span class="String">&quot;color&quot;</span><span class="Statement">;</span>
+<span class="Statement">import</span> _ <span class="Statement">from</span> <span class="String">&quot;lodash&quot;</span><span class="Statement">;</span>
+<span class="Statement">import</span> <span class="Function">{</span> getData <span class="Function">}</span> <span class="Statement">from</span> <span class="String">&quot;base9-builder&quot;</span><span class="Statement">;</span>
+
+<span class="Statement">export</span> <span class="Type">const</span> DEFAULT_PALETTE <span class="Statement">=</span> <span class="String">'16161D-E0E5C8-CEAA7A-A6B2C1-CBA8B3-93BC95-DBA595-8AB9B2-B0B47A'</span><span class="Statement">;</span>
+<span class="Statement">export</span> <span class="Type">const</span> PALETTE_REGEX <span class="Statement">=</span> <span class="String">/^([0-9a-fA-F]{6}-){8}[0-9a-fA-F]{6}$/</span><span class="Statement">;</span>
+<span class="Statement">export</span> <span class="Type">const</span> palette_key <span class="Statement">=</span> <span class="Special">Symbol</span><span class="Statement">()</span> <span class="Statement">as</span> InjectionKey<span class="Statement">&lt;</span>Palette<span class="Statement">&gt;</span>
+
+<span class="Statement">export</span> <span class="Statement">class</span> Palette <span class="Function">{</span>
+    palette: Ref<span class="Statement">&lt;</span><span class="Type">string</span><span class="Statement">&gt;</span><span class="Statement">;</span>
+    hexs <span class="Statement">=</span> _.times<span class="Statement">(</span>N9<span class="Statement">,</span> i <span class="Statement">=&gt;</span> computed<span class="Statement">(</span><span class="Function">{</span>
+      <span class="Statement">get</span>: <span class="Statement">()</span> <span class="Statement">=&gt;</span> <span class="Identifier">this</span>.palette.value.substring<span class="Statement">(</span>i*<span class="Constant">7</span><span class="Statement">,</span> i*<span class="Constant">7</span>+<span class="Constant">6</span><span class="Statement">)</span><span class="Statement">,</span>
+      <span class="Statement">set</span>: <span class="Statement">(</span>c: <span class="Type">string</span><span class="Statement">)</span> <span class="Statement">=&gt;</span> <span class="Function">{</span>
+        <span class="Type">const</span> start <span class="Statement">=</span> i*<span class="Constant">7</span><span class="Statement">;</span>
+        <span class="Type">const</span> end <span class="Statement">=</span> i*<span class="Constant">7</span>+<span class="Constant">6</span><span class="Statement">;</span>
+        <span class="Identifier">this</span>.palette.value <span class="Statement">=</span>
+          <span class="Identifier">this</span>.palette.value.substring<span class="Statement">(</span><span class="Constant">0</span><span class="Statement">,</span>start<span class="Statement">)</span> +
+          c +
+          <span class="Identifier">this</span>.palette.value.substring<span class="Statement">(</span>end<span class="Statement">)</span><span class="Statement">;</span>
+      <span class="Function">}</span>
+    <span class="Function">}</span><span class="Statement">))</span><span class="Statement">;</span>
+    colors <span class="Statement">=</span> _.times<span class="Statement">(</span>N9<span class="Statement">,</span> i <span class="Statement">=&gt;</span> computed<span class="Statement">(</span><span class="Function">{</span>
+      <span class="Statement">get</span>: <span class="Statement">()</span> <span class="Statement">=&gt;</span> Color<span class="Statement">(</span><span class="String">&quot;#&quot;</span>+<span class="Identifier">this</span>.hexs<span class="Function">[</span>i<span class="Function">]</span>.value<span class="Statement">)</span><span class="Statement">,</span>
+      <span class="Statement">set</span>: <span class="Statement">(</span>c: Color<span class="Statement">)</span> <span class="Statement">=&gt;</span> <span class="Function">{</span>
+        <span class="Identifier">this</span>.hexs<span class="Function">[</span>i<span class="Function">]</span>.value <span class="Statement">=</span> c.hex<span class="Statement">()</span>.substring<span class="Statement">(</span><span class="Constant">1</span><span class="Statement">)</span><span class="Statement">;</span>
+      <span class="Function">}</span>
+    <span class="Function">}</span><span class="Statement">))</span><span class="Statement">;</span>
+    colorData <span class="Statement">=</span> computed<span class="Statement">(()</span> <span class="Statement">=&gt;</span> getData<span class="Statement">(</span><span class="Identifier">this</span>.palette.value<span class="Statement">))</span><span class="Statement">;</span>
+    dark <span class="Statement">=</span> computed<span class="Statement">(()</span> <span class="Statement">=&gt;</span> <span class="Identifier">this</span>.colors<span class="Function">[</span><span class="Constant">0</span><span class="Function">]</span>.value.l<span class="Statement">()</span> <span class="Statement">&lt;</span> <span class="Identifier">this</span>.colors<span class="Function">[</span><span class="Constant">1</span><span class="Function">]</span>.value.l<span class="Statement">())</span><span class="Statement">;</span>
+    <span class="Statement">constructor</span><span class="Statement">(</span>palette: <span class="Type">string</span><span class="Statement">)</span> <span class="Function">{</span>
+      <span class="Identifier">this</span>.palette <span class="Statement">=</span> ref<span class="Statement">(</span>palette<span class="Statement">)</span><span class="Statement">;</span>
+    <span class="Function">}</span>
+<span class="Function">}</span>
+</pre>
+</body>
+</html>
+<!-- vim: set foldmethod=manual : -->

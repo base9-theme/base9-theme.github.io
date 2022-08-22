@@ -70,16 +70,17 @@
 .container > div {
     display: flex;
     margin-bottom: 5px;
+    width: 250px;
 }
 .color-circle {
     transform: translate(-50%, -50%);
     position: absolute;
     user-select: none;
     text-align: center;
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border: 1px solid #fff;
-    border-radius: 4px;
+    border-radius: 3px;
 }
 .color-circle-selected {
     z-index: 10;
@@ -94,7 +95,7 @@ import { SwapVertRound, ContentCopySharp, MenuRound } from '@vicons/material';
 import Color from "color";
 import _ from "lodash";
 import * as convert from 'color-convert';
-import { computed, CSSProperties, inject, Ref, ref, watch, watchPostEffect } from "vue";
+import { computed, CSSProperties, Ref, ref, watch, watchPostEffect } from "vue";
 import { ColorPalette } from "../helpers";
 import { useMessage } from 'naive-ui';
 (window as any).convert = convert;
@@ -191,17 +192,19 @@ function nextColorSpace() {
     setting.value.colorSpaceIndex = (setting.value.colorSpaceIndex + 1) % COLOR_SPACES.length;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     color: Color,
-    otherColors: { color: Color, label: string }[],
-}>();
+    otherColors?: { color: Color, label: string }[],
+}>(), {
+    otherColors: () => [],
+});
 
 const emit = defineEmits(["update:color"]);
 
 const setting = ref({
     tmpColor: undefined as undefined|Color,
-    colorSpaceIndex: 0,
-    flags: [] as FLAG[],
+    colorSpaceIndex: 2,
+    flags: ['compare', 'region'] as FLAG[],
     tmpNumber: 0,
 });
 
@@ -236,7 +239,6 @@ watch(props, () => {
 
 type ColorSpaceName = keyof typeof COLOR_SPACES;
 
-const colors = inject('colors') as Ref<ColorPalette>;
 const handleDrag = (e: DragEvent) => {
     const oldXyz = colorSpace.value.preview.colorToXyz(props.color);
     let newColor = colorSpace.value.preview.xyzToColor([e.x, e.y, oldXyz[2]]);

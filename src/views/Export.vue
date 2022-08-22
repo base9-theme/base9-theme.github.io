@@ -1,12 +1,19 @@
 <template>
+<Main>
 <div>
-<n-select v-model:value="value" :options="options" />
-<!-- <n-code :code="content" language="cpp">
-</n-code> -->
-<div class="content" style="">
-{{content}}
+  <n-select v-model:value="value" :options="options" />
+  <!-- <n-code :code="content" language="cpp">
+  </n-code> -->
+  <n-input
+      v-model:value="value"
+      type="textarea"
+      placeholder="Basic Textarea"
+  />
+  <div class="content" style="">
+  {{content}}
+  </div>
 </div>
-</div>
+</Main>
 </template>
 <style>
 .content {
