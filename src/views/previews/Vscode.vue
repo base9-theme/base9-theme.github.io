@@ -1,41 +1,42 @@
 <template>
-<p class="c0"><span class="c9">import</span><span class="c1">&nbsp;{ computed, ref } </span><span class="c9">from</span><span class="c1">&nbsp;</span><span class="c4">&quot;vue&quot;</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">import</span><span class="c1">&nbsp;</span><span class="c9">type</span><span class="c1">&nbsp;{ Ref, WritableComputedRef, InjectionKey } </span><span class="c9">from</span><span class="c1">&nbsp;</span><span class="c4">&quot;vue&quot;</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">import</span><span class="c1">&nbsp;{ I9, N9 } </span><span class="c9">from</span><span class="c1">&nbsp;</span><span class="c4">&quot;./helpers&quot;</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">import</span><span class="c1">&nbsp;Color </span><span class="c9">from</span><span class="c1">&nbsp;</span><span class="c4">&quot;color&quot;</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">import</span><span class="c1">&nbsp;_ </span><span class="c9">from</span><span class="c1">&nbsp;</span><span class="c4">&quot;lodash&quot;</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">import</span><span class="c1">&nbsp;{ getData } </span><span class="c9">from</span><span class="c1">&nbsp;</span><span class="c4">&quot;base9-builder&quot;</span><span class="c1 c2">;</span></p>
-<p class="c0 c10"><span class="c1 c2"></span></p>
-<p class="c0"><span class="c9">export</span><span class="c1">&nbsp;</span><span class="c9">const</span><span class="c1">&nbsp;DEFAULT_PALETTE </span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c4">&#39;16161D-E0E5C8-CEAA7A-A6B2C1-CBA8B3-93BC95-DBA595-8AB9B2-B0B47A&#39;</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">export</span><span class="c1">&nbsp;</span><span class="c9">const</span><span class="c1">&nbsp;PALETTE_REGEX </span><span class="c7">=</span><span class="c4">&nbsp;/</span><span class="c9">^</span><span class="c8">(</span><span class="c1">[</span><span class="c6">0-9a-fA-F</span><span class="c1">]</span><span class="c7">{6}</span><span class="c4">-</span><span class="c8">)</span><span class="c7">{8}</span><span class="c1">[</span><span class="c6">0-9a-fA-F</span><span class="c1">]</span><span class="c7">{6}</span><span class="c9">$</span><span class="c4">/</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c9">export</span><span class="c1">&nbsp;</span><span class="c9">const</span><span class="c1">&nbsp;palette_key </span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c3">Symbol</span><span class="c1">() </span><span class="c9">as</span><span class="c1">&nbsp;</span><span class="c8">InjectionKey</span><span class="c1">&lt;</span><span class="c8">Palette</span><span class="c1 c2">&gt;</span></p>
-<p class="c0 c10"><span class="c1 c2"></span></p>
-<p class="c0"><span class="c9">export</span><span class="c1">&nbsp;</span><span class="c9">class</span><span class="c1">&nbsp;</span><span class="c8">Palette</span><span class="c1 c2">&nbsp;{</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp;</span><span class="c6">palette</span><span class="c7">:</span><span class="c1">&nbsp;</span><span class="c8">Ref</span><span class="c1">&lt;</span><span class="c8">string</span><span class="c1 c2">&gt;;</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp;</span><span class="c6">hexs</span><span class="c1">&nbsp;</span><span class="c7">=</span><span class="c1">&nbsp;_.</span><span class="c3">times</span><span class="c1">(N9, </span><span class="c5">i</span><span class="c1">&nbsp;</span><span class="c8">=&gt;</span><span class="c1">&nbsp;</span><span class="c3">computed</span><span class="c1 c2">({</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp;</span><span class="c3">get</span><span class="c1">: () </span><span class="c8">=&gt;</span><span class="c1">&nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">palette</span><span class="c1">.</span><span class="c6">value</span><span class="c1">.</span><span class="c3">substring</span><span class="c1">(</span><span class="c5">i</span><span class="c7">*</span><span class="c3">7</span><span class="c1">, </span><span class="c5">i</span><span class="c7">*</span><span class="c3">7</span><span class="c7">+</span><span class="c3">6</span><span class="c1 c2">),</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp;</span><span class="c3">set</span><span class="c1">: (</span><span class="c5">c</span><span class="c7">:</span><span class="c1">&nbsp;</span><span class="c8">string</span><span class="c1">) </span><span class="c8">=&gt;</span><span class="c1 c2">&nbsp;{</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c9">const</span><span class="c1">&nbsp;start </span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c5">i</span><span class="c7">*</span><span class="c3">7</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c9">const</span><span class="c1">&nbsp;end </span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c5">i</span><span class="c7">*</span><span class="c3">7</span><span class="c7">+</span><span class="c3">6</span><span class="c1 c2">;</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">palette</span><span class="c1">.</span><span class="c6">value</span><span class="c1">&nbsp;</span><span class="c7 c2">=</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">palette</span><span class="c1">.</span><span class="c6">value</span><span class="c1">.</span><span class="c3">substring</span><span class="c1">(</span><span class="c3">0</span><span class="c1">,start) </span><span class="c7 c2">+</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c5">c</span><span class="c1">&nbsp;</span><span class="c7 c2">+</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">palette</span><span class="c1">.</span><span class="c6">value</span><span class="c1">.</span><span class="c3">substring</span><span class="c1 c2">(end);</span></p>
-<p class="c0"><span class="c1 c2">&nbsp; &nbsp; &nbsp;}</span></p>
-<p class="c0"><span class="c1 c2">&nbsp; &nbsp;}));</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp;</span><span class="c6">colors</span><span class="c1">&nbsp;</span><span class="c7">=</span><span class="c1">&nbsp;_.</span><span class="c3">times</span><span class="c1">(N9, </span><span class="c5">i</span><span class="c1">&nbsp;</span><span class="c8">=&gt;</span><span class="c1">&nbsp;</span><span class="c3">computed</span><span class="c1 c2">({</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp;</span><span class="c3">get</span><span class="c1">: () </span><span class="c8">=&gt;</span><span class="c1">&nbsp;</span><span class="c8">Color</span><span class="c1">(</span><span class="c4">&quot;#&quot;</span><span class="c7">+</span><span class="c9">this</span><span class="c1">.</span><span class="c6">hexs</span><span class="c1">[</span><span class="c5">i</span><span class="c1">].</span><span class="c6">value</span><span class="c1 c2">),</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp;</span><span class="c3">set</span><span class="c1">: (</span><span class="c5">c</span><span class="c7">:</span><span class="c1">&nbsp;</span><span class="c8">Color</span><span class="c1">) </span><span class="c8">=&gt;</span><span class="c1 c2">&nbsp;{</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">hexs</span><span class="c1">[</span><span class="c5">i</span><span class="c1">].</span><span class="c6">value</span><span class="c1">&nbsp;</span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c5">c</span><span class="c1">.</span><span class="c3">hex</span><span class="c1">().</span><span class="c3">substring</span><span class="c1">(</span><span class="c3">1</span><span class="c1 c2">);</span></p>
-<p class="c0"><span class="c1 c2">&nbsp; &nbsp; &nbsp;}</span></p>
-<p class="c0"><span class="c1 c2">&nbsp; &nbsp;}));</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp;</span><span class="c6">colorData</span><span class="c1">&nbsp;</span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c3">computed</span><span class="c1">(() </span><span class="c8">=&gt;</span><span class="c1">&nbsp;</span><span class="c3">getData</span><span class="c1">(</span><span class="c9">this</span><span class="c1">.</span><span class="c6">palette</span><span class="c1">.</span><span class="c6">value</span><span class="c1 c2">));</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp;</span><span class="c6">dark</span><span class="c1">&nbsp;</span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c3">computed</span><span class="c1">(() </span><span class="c8">=&gt;</span><span class="c1">&nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">colors</span><span class="c1">[</span><span class="c3">0</span><span class="c1">].</span><span class="c6">value</span><span class="c1">.</span><span class="c3">l</span><span class="c1">() </span><span class="c7">&lt;</span><span class="c1">&nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">colors</span><span class="c1">[</span><span class="c3">1</span><span class="c1">].</span><span class="c6">value</span><span class="c1">.</span><span class="c3">l</span><span class="c1 c2">());</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp;</span><span class="c9">constructor</span><span class="c1">(</span><span class="c5">palette</span><span class="c7">:</span><span class="c1">&nbsp;</span><span class="c8">string</span><span class="c1 c2">) {</span></p>
-<p class="c0"><span class="c1">&nbsp; &nbsp; &nbsp;</span><span class="c9">this</span><span class="c1">.</span><span class="c6">palette</span><span class="c1">&nbsp;</span><span class="c7">=</span><span class="c1">&nbsp;</span><span class="c3">ref</span><span class="c1">(</span><span class="c5">palette</span><span class="c1 c2">);</span></p>
-<p class="c0"><span class="c1 c2">&nbsp; &nbsp;}</span></p>
-<p class="c0"><span class="c1">}</span></p>
-<p class="c10 c11"><span class="c2 c13"></span></p>
+<p class="c5"><span class="c2">import</span><span class="c0">&nbsp;{ computed, ref } </span><span class="c2">from</span><span class="c0">&nbsp;</span><span class="c6">"vue"</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">import</span><span class="c0">&nbsp;</span><span class="c2">type</span><span class="c0">&nbsp;{ Ref, WritableComputedRef, InjectionKey } </span><span class="c2">from</span><span class="c0">&nbsp;</span><span class="c6">"vue"</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">import</span><span class="c0">&nbsp;{ I9, N9 } </span><span class="c2">from</span><span class="c0">&nbsp;</span><span class="c6">"./helpers"</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">import</span><span class="c0">&nbsp;Color </span><span class="c2">from</span><span class="c0">&nbsp;</span><span class="c6">"color"</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">import</span><span class="c0">&nbsp;_ </span><span class="c2">from</span><span class="c0">&nbsp;</span><span class="c6">"lodash"</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">import</span><span class="c0">&nbsp;{ getData } </span><span class="c2">from</span><span class="c0">&nbsp;</span><span class="c6">"base9-builder"</span><span class="c0 c3">;</span></p>
+<p class="c5 c9"><span class="c0 c3"></span></p>
+<p class="c5"><span class="c2">export</span><span class="c0">&nbsp;</span><span class="c2">const</span><span class="c0">&nbsp;DEFAULT_PALETTE </span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c6">'16161D-E0E5C8-CEAA7A-A6B2C1-CBA8B3-8AB9B2-DBA595-93BC95-B0B47A'</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">export</span><span class="c0">&nbsp;</span><span class="c2">const</span><span class="c0">&nbsp;PALETTE_REGEX </span><span class="c2">=</span><span class="c6">&nbsp;/</span><span class="c2">^</span><span class="c10">(</span><span class="c0">[</span><span class="c4">0-9a-fA-F</span><span class="c0">]</span><span class="c2">{6}</span><span class="c6">-</span><span class="c10">)</span><span class="c2">{8}</span><span class="c0">[</span><span class="c4">0-9a-fA-F</span><span class="c0">]</span><span class="c2">{6}$</span><span class="c6">/</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c2">export</span><span class="c0">&nbsp;</span><span class="c2">const</span><span class="c0">&nbsp;palette_key </span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c4">Symbol</span><span class="c0">() </span><span class="c2">as</span><span class="c0">&nbsp;</span><span class="c10">InjectionKey</span><span class="c0">&lt;</span><span class="c10">Palette</span><span class="c0 c3">&gt;</span></p>
+<p class="c5 c9"><span class="c0 c3"></span></p>
+<p class="c5"><span class="c2">export</span><span class="c0">&nbsp;</span><span class="c2">class</span><span class="c0">&nbsp;</span><span class="c10">Palette</span><span class="c0 c3">&nbsp;{</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp;</span><span class="c4">palette</span><span class="c2">:</span><span class="c0">&nbsp;</span><span class="c10">Ref</span><span class="c0">&lt;</span><span class="c10">string</span><span class="c0 c3">&gt;;</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp;</span><span class="c4">hexs</span><span class="c0">&nbsp;</span><span class="c2">=</span><span class="c0">&nbsp;_.</span><span class="c4">times</span><span class="c0">(N9, </span><span class="c7">i</span><span class="c0">&nbsp;</span><span class="c10">=&gt;</span><span class="c0">&nbsp;</span><span class="c4">computed</span><span class="c0 c3">({</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp;</span><span class="c4">get</span><span class="c0">: () </span><span class="c10">=&gt;</span><span class="c0">&nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">palette</span><span class="c0">.</span><span class="c4">value</span><span class="c0">.</span><span class="c4">substring</span><span class="c0">(</span><span class="c7">i</span><span class="c2">*</span><span class="c8">7</span><span class="c0">, </span><span class="c7">i</span><span class="c2">*</span><span class="c8">7</span><span class="c2">+</span><span class="c8">6</span><span class="c0 c3">),</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp;</span><span class="c4">set</span><span class="c0">: (</span><span class="c7">c</span><span class="c2">:</span><span class="c0">&nbsp;</span><span class="c10">string</span><span class="c0">) </span><span class="c10">=&gt;</span><span class="c0 c3">&nbsp;{</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c2">const</span><span class="c0">&nbsp;start </span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c7">i</span><span class="c2">*</span><span class="c8">7</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c2">const</span><span class="c0">&nbsp;end </span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c7">i</span><span class="c2">*</span><span class="c8">7</span><span class="c2">+</span><span class="c8">6</span><span class="c0 c3">;</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">palette</span><span class="c0">.</span><span class="c4">value</span><span class="c0">&nbsp;</span><span class="c2 c3">=</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">palette</span><span class="c0">.</span><span class="c4">value</span><span class="c0">.</span><span class="c4">substring</span><span class="c0">(</span><span class="c8">0</span><span class="c0">,start) </span><span class="c2 c3">+</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c7">c</span><span class="c0">&nbsp;</span><span class="c2 c3">+</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">palette</span><span class="c0">.</span><span class="c4">value</span><span class="c0">.</span><span class="c4">substring</span><span class="c0 c3">(end);</span></p>
+<p class="c5"><span class="c0 c3">&nbsp; &nbsp; &nbsp;}</span></p>
+<p class="c5"><span class="c0 c3">&nbsp; &nbsp;}));</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp;</span><span class="c4">colors</span><span class="c0">&nbsp;</span><span class="c2">=</span><span class="c0">&nbsp;_.</span><span class="c4">times</span><span class="c0">(N9, </span><span class="c7">i</span><span class="c0">&nbsp;</span><span class="c10">=&gt;</span><span class="c0">&nbsp;</span><span class="c4">computed</span><span class="c0 c3">({</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp;</span><span class="c4">get</span><span class="c0">: () </span><span class="c10">=&gt;</span><span class="c0">&nbsp;</span><span class="c10">Color</span><span class="c0">(</span><span class="c6">"#"</span><span class="c2">+this</span><span class="c0">.</span><span class="c4">hexs</span><span class="c0">[</span><span class="c7">i</span><span class="c0">].</span><span class="c4">value</span><span class="c0 c3">),</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp;</span><span class="c4">set</span><span class="c0">: (</span><span class="c7">c</span><span class="c2">:</span><span class="c0">&nbsp;</span><span class="c10">Color</span><span class="c0">) </span><span class="c10">=&gt;</span><span class="c0 c3">&nbsp;{</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp; &nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">hexs</span><span class="c0">[</span><span class="c7">i</span><span class="c0">].</span><span class="c4">value</span><span class="c0">&nbsp;</span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c7">c</span><span class="c0">.</span><span class="c4">hex</span><span class="c0">().</span><span class="c4">substring</span><span class="c0">(</span><span class="c8">1</span><span class="c0 c3">);</span></p>
+<p class="c5"><span class="c0 c3">&nbsp; &nbsp; &nbsp;}</span></p>
+<p class="c5"><span class="c0 c3">&nbsp; &nbsp;}));</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp;</span><span class="c4">colorData</span><span class="c0">&nbsp;</span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c4">computed</span><span class="c0">(() </span><span class="c10">=&gt;</span><span class="c0">&nbsp;</span><span class="c4">getData</span><span class="c0">(</span><span class="c2">this</span><span class="c0">.</span><span class="c4">palette</span><span class="c0">.</span><span class="c4">value</span><span class="c0 c3">));</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp;</span><span class="c4">dark</span><span class="c0">&nbsp;</span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c4">computed</span><span class="c0">(() </span><span class="c10">=&gt;</span><span class="c0">&nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">colors</span><span class="c0">[</span><span class="c8">0</span><span class="c0">].</span><span class="c4">value</span><span class="c0">.</span><span class="c4">l</span><span class="c0">() </span><span class="c2">&lt;</span><span class="c0">&nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">colors</span><span class="c0">[</span><span class="c8">1</span><span class="c0">].</span><span class="c4">value</span><span class="c0">.</span><span class="c4">l</span><span class="c0 c3">());</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp;</span><span class="c2">constructor</span><span class="c0">(</span><span class="c7">palette</span><span class="c2">:</span><span class="c0">&nbsp;</span><span class="c10">string</span><span class="c0 c3">) {</span></p>
+<p class="c5"><span class="c0">&nbsp; &nbsp; &nbsp;</span><span class="c2">this</span><span class="c0">.</span><span class="c4">palette</span><span class="c0">&nbsp;</span><span class="c2">=</span><span class="c0">&nbsp;</span><span class="c4">ref</span><span class="c0">(</span><span class="c7">palette</span><span class="c0 c3">);</span></p>
+<p class="c5"><span class="c0 c3">&nbsp; &nbsp;}</span></p>
+<p class="c5"><span class="c0 c3">}</span></p>
+<p class="c5 c9"><span class="c0 c3"></span></p>
+<p class="c9 c11"><span class="c1"></span></p>
 </template>
 <style scoped>
 @import url('https://themes.googleusercontent.com/fonts/css?kit=sDU-RIIs3Wq_4pUcDwWu-05zdwzqyXAFhQ3EpAK6bTA');
@@ -46,7 +47,16 @@ ol{
 table td,table th{
     padding:0
 }
-.c0{
+.c1{
+    color:#000000;
+    font-weight:400;
+    text-decoration:none;
+    vertical-align:baseline;
+    font-size:12pt;
+    font-family:"Cambria";
+    font-style:normal
+}
+.c5{
     background-color: var(--base9-background);
     padding-top:0pt;
     padding-bottom:0pt;
@@ -63,17 +73,41 @@ table td,table th{
     widows:2;
     text-align:left
 }
+.c6{
+    font-size:10.5pt;
+    font-family:"Courier New";
+    color: var(--base9-c3-p100);
+    font-weight:400
+}
+.c2{
+    font-size:10.5pt;
+    font-family:"Courier New";
+    color: var(--base9-c2-p100);
+    font-weight:400
+}
+.c4{
+    font-size:10.5pt;
+    font-family:"Courier New";
+    color: var(--base9-c4-p100);
+    font-weight:400
+}
+.c0{
+    font-size:10.5pt;
+    font-family:"Courier New";
+    color: var(--base9-c0-p100);
+    font-weight:400
+}
 .c8{
     font-size:10.5pt;
     font-family:"Courier New";
-    color:var(--base9-c1-p100);
+    color: var(--base9-c5-p100);
     font-weight:400
 }
-.c13{
-    color:#000000;
-    font-weight:400;
-    font-size:12pt;
-    font-family:"Cambria"
+.c10{
+    font-size:10.5pt;
+    font-family:"Courier New";
+    color: var(--base9-c1-p100);
+    font-weight:400
 }
 .c7{
     font-size:10.5pt;
@@ -81,53 +115,17 @@ table td,table th{
     color: var(--base9-c6-p100);
     font-weight:400
 }
-.c1{
-    font-size:10.5pt;
-    font-family:"Courier New";
-    color:var(--base9-foreground-p100);
-    font-weight:400
-}
-.c9{
-    font-size:10.5pt;
-    font-family:"Courier New";
-    color:var(--base9-c7-p100);
-    font-weight:400
-}
-.c4{
-    font-size:10.5pt;
-    font-family:"Courier New";
-    color: var(--base9-c3-p100);
-    font-weight:400
-}
-.c6{
-    font-size:10.5pt;
-    font-family:"Courier New";
-    color: var(--base9-c2-p100);
-    font-weight:400
-}
-.c5{
-    font-size:10.5pt;
-    font-family:"Courier New";
-    color: var(--base9-c5-p100);
-    font-weight:400
-}
-.c3{
-    font-size:10.5pt;
-    font-family:"Courier New";
-    color: var(--base9-c4-p100);
-    font-weight:400
-}
-.c12 {
+.c12{
     background-color:#ffffff;
     max-width:468pt;
     padding:72pt 72pt 72pt 72pt
 }
-.c2{
+.c3{
     text-decoration:none;
     vertical-align:baseline;
     font-style:normal
 }
-.c10{
+.c9{
     height:12pt
 }
 .title{
@@ -245,6 +243,7 @@ h6{
     widows:2;
     text-align:left
 }
+
 </style>
 
 <script setup lang="ts">

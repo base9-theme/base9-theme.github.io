@@ -1,7 +1,7 @@
 <template>
   <n-layout position="absolute" class="main">
     <n-layout-header bordered class="header" >
-      <span @click="$router.push('/')">
+      <span class="home" @click="$router.push('/')">
         <Logo :size="32" :palette="palette.palette.value"/>
         <!-- <span style="width: 32px; height: 32px;" v-html="svgString"></span> -->
         <span style="font-size: 32px">base9</span>
@@ -37,6 +37,11 @@
 .header {
   display: flex;
   height: 64px;
+  align-items: center;
+}
+
+.home {
+  display: flex;
   align-items: center;
 }
 .slot {
@@ -83,13 +88,13 @@ const menuOptions = [
   createRouterLinkMenuItem({path: '/build', label: 'Build'}),
   createRouterLinkMenuItem({path: '/preview', label: 'Preview'}),
   createRouterLinkMenuItem({path: '/install', label: 'Install'}),
-  {
-    label: 'Guide',
-    key: 'Guide',
-    children: [
-      createRouterLinkMenuItem({path: '/guide/color_palette', label: 'Color Palette'}),
-    ]
-  }
+  // {
+  //   label: 'Guide',
+  //   key: 'Guide',
+  //   children: [
+  //     createRouterLinkMenuItem({path: '/guide/color_palette', label: 'Color Palette'}),
+  //   ]
+  // }
 ];
 
 const showEditor = ref(false);

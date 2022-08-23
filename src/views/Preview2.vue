@@ -10,15 +10,17 @@
                     <Install></Install>
                 </div>
                 <div id="terminal">
-                    <h1>ANSI and Absolute Colors</h1>
+                    <h1>Terminal</h1>
                     <Ansi></Ansi>
                 </div>
                 <div id="editor">
-                    <h1>Syntax Highlighting (Vscode)</h1>
+                    <h1>Syntax Highlighting</h1>
+                    <h2>vscode</h2>
                     <Vscode></Vscode>
                 </div>
                 <div id="contrast">
-                    <h1>Contrast Table</h1>
+                    <h1>Contrast</h1>
+                    <p><a href="https://coolors.co/contrast-checker">WCAG 2.0 Contrast</a></p>
                     <Contrast></Contrast>
                 </div>
             </n-layout-content>
@@ -29,7 +31,7 @@
                 <n-anchor :show-rail="false" :show-background="false">
                     <n-anchor-link title="Install" href="#install" />
                     <n-anchor-link title="Terminal" href="#terminal" />
-                    <n-anchor-link title="Editor" href="#editor" />
+                    <n-anchor-link title="Syntax Highlighting" href="#editor" />
                     <n-anchor-link title="Contrast" href="#contrast" />
                 </n-anchor>
             </n-layout-sider>
