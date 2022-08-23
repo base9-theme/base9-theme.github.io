@@ -23,9 +23,6 @@
                 <moon-outline v-if="palette.dark.value" />
             </n-icon>
         </n-button>
-        <n-button type="primary">
-            Install
-        </n-button>
     </div>
 </div>
 </template>

@@ -10,7 +10,7 @@ import init from 'base9-builder';
 // import 'vuetify/styles' // Global CSS has to be imported
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-
+import Markdown from 'vue3-markdown-it';
 
 function x() {}
 
@@ -58,6 +58,7 @@ async function main() {
     // .use(Antd)
     // .use(vuetify)
     .use(router)
+    .use(Markdown)
     .mount('#app');
 }
 

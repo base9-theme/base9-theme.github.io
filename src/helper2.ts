@@ -5,7 +5,7 @@ import Color from "color";
 import _ from "lodash";
 import { getData } from "base9-builder";
 
-export const DEFAULT_PALETTE = '16161D-E0E5C8-CEAA7A-A6B2C1-CBA8B3-93BC95-DBA595-8AB9B2-B0B47A';
+export const DEFAULT_PALETTE = '16161D-E0E5C8-CEAA7A-A6B2C1-CBA8B3-8AB9B2-DBA595-93BC95-B0B47A';
 export const PALETTE_REGEX = /^([0-9a-fA-F]{6}-){8}[0-9a-fA-F]{6}$/;
 export const palette_key = Symbol() as InjectionKey<Palette>
 

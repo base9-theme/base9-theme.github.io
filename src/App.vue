@@ -46,7 +46,6 @@ import { Palette, palette_key } from './helper2';
 
 const route = useRoute();
 const router = useRouter();
-// const DEFAULT_PALETTE = '282936-e9e9f4-ff5555-ffb86c-f1fa8c-50fa7b-8be9fd-bd93f9-ff79c6';
 
 function getDefaultPalette() {
   const palette = route.params.palette;

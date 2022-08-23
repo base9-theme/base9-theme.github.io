@@ -1,5 +1,6 @@
 <template>
-    <div className="main">
+<Main>
+    <div className="container">
       <Logo className="logo" size="20vh" :palette="palette.palette.value"/>
       <div className="title">base9</div>
       <div className="sub-title">
@@ -19,16 +20,17 @@
         <router-link :to="{query: { palette: null }}">reset theme</router-link>
       </div>
     </div>
+</Main>
 </template>
 <style scoped>
-.main {
+.container {
   background-color: var(--base9-0);
   color: var(--base9-1);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  /* height: 100vh; */
 }
 .logo {
 

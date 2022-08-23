@@ -11,9 +11,9 @@
       <!-- <a href="/">
           <n-icon><dice /></n-icon>
       </a> -->
-      <n-button type="primary">
+      <!-- <n-button type="primary">
           <n-icon><icon-color-palette /></n-icon>
-      </n-button>
+      </n-button> -->
       <!-- <n-button circle quaternary>
           <n-icon><logo-discord /></n-icon>
       </n-button> -->
@@ -23,7 +23,7 @@
         </n-button>
       </a>
     </n-layout-header>
-    <n-layout-content position="absolute" class="content">
+    <n-layout-content position="absolute" class="slot">
       <slot/>
     </n-layout-content>
   </n-layout>
@@ -39,7 +39,7 @@
   height: 64px;
   align-items: center;
 }
-.content {
+.slot {
   top: 64px;
   bottom: 0px;
   /* width: 70vw; */
