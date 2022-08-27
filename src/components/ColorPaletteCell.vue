@@ -8,7 +8,7 @@ import Color from "color";
 <style scoped>
 
 </style>
-<script setop lang="ts">
+<script setup lang="ts">
 import Color from "color";
 import { ref } from "vue";
 

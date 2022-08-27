@@ -32,3 +32,5 @@ declare module '*.mustache' {
   const s: string;
   export default s;
 }
+
+declare module 'vue3-markdown-it';

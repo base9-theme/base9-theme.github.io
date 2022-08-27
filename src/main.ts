@@ -8,8 +8,8 @@ import init from 'base9-builder';
 // import { createVuetify } from 'vuetify'
 // import 'ant-design-vue/dist/antd.variable.min.css'
 // import 'vuetify/styles' // Global CSS has to be imported
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+// import * as components from 'vuetify/components'
+// import * as directives from 'vuetify/directives'
 import Markdown from 'vue3-markdown-it';
 
 function x() {}
