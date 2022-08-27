@@ -21,9 +21,9 @@
     <div>
       {{step.subtitle}}
     </div>
-    <router-link class="preview-link" to="/preview">
-      <n-button v-if="step.key === 'primary'" type="primary" size="large">Preview</n-button>
-    </router-link>
+    <n-button v-if="step.key === 'primary'" type="primary" @click="clickPreview"
+size="large">Generate & Preview</n-button>
+
   </div>
 
   <BuildColorPicker v-model:color="color1"></BuildColorPicker>
@@ -173,10 +173,10 @@ const color1 = computed({
   set(c: Color) {
     const hex1 = c.hex().substring(1);
     const hex2 = contrastColor(c).hex().substring(1);
-    const bg = palette.palette.value.substring(0,6);
-    const fg = palette.palette.value.substring(7,13);
-    const c1 = palette.palette.value.substring(14, 20);
-    const c2 = palette.palette.value.substring(21, 27);
+    const bg = palette.hexs[0].value;
+    const fg = palette.hexs[1].value;
+    const c1 = palette.hexs[2].value;
+    const c2 = palette.hexs[3].value;
     // Note: we are using destructuring assignment syntax here.
     switch(step.value.key) {
       case 'bg':
@@ -192,5 +192,15 @@ const color1 = computed({
         break;
     }
   }
-})
+});
+
+function clickPreview() {
+  const newPalette = renderString(`${palette.palette.value.substring(0,21)}?`,
+"{{PALETTE}}");
+  router.push({
+    path: '/preview',
+    query: { palette: newPalette },
+  });
+
+}
 </script>

@@ -89,7 +89,7 @@ watch(
 );
 
 watch(() => palette.palette.value, async () => {
-  await router.replace({
+  await router.push({
     query: { palette: palette.palette.value },
   });
 });
@@ -99,7 +99,7 @@ provide('colorData', colorData);
 const themeOverrides: Ref<GlobalThemeOverrides> = computed(() => {
   const M = colorData.value;
   const H = (c: Formatted) => `#${c.hex}`;
-  console.log(H(M.primary.p100));
+  // console.log(H(M.primary.p100));
   return {
     common: {
       borderRadius: '0px',

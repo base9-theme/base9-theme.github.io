@@ -92,7 +92,6 @@ async function generate() {
 }
 
 function toggleLock(i: number) {
-  console.log(i, state.value[i].locked);
   state.value[i].locked = !state.value[i].locked;
 }
 

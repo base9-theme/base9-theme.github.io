@@ -45,7 +45,6 @@ function handleDrag(e: DragEvent) {
     }
 
     const value = _.clamp(- e.y / K * (props.max - props.min) + dragged.value, props.min, props.max);
-    console.log(value);
     
     localValue.value = toString(value);
     if(e.type === 'end') {

@@ -53,7 +53,9 @@ import fileDownload from 'js-file-download';
 import type { ColorPalette } from '../helpers';
 import type { Config } from '../../base9-templates/scripts/config';
 import { palette_key } from '../helper2';
+import { useMessage } from 'naive-ui';
 const TEMPLATE_PREFIX = '../../base9-templates/templates/';
+const message = useMessage();
 
 // Cannot replace with prefix, requires literal.
 const configRaw = import.meta.globEager('../../base9-templates/templates/*/config.yml');
@@ -62,7 +64,7 @@ const configObj: Dictionary<Config> = Object.fromEntries(_.entries(configRaw).ma
   ((/\.\.\/\.\.\/base9-templates\/templates\/(.*)\/config.yml/.exec(k) || [])[1]),
   v.default as Config,
 ])));
-console.log(configObj);
+// console.log(configObj);
 
 const options = _.map(configObj, (v, k) => ({
   label: v.app.name,
@@ -83,8 +85,6 @@ const installation = computed(() => {
   if (!config.value) {
     return null;
   }
-  console.log(config.value.installation[0].before_md);
-  console.log(config.value.installation[0].after_md);
   return config.value.installation[0];
 })
 
@@ -105,13 +105,13 @@ function downloadTemplate() {
 
 function copyPalette() {
   navigator.clipboard.writeText(palette.palette.value);
-  // message.success('Copied');
+  message.success('Palette Copied');
 }
 
 function copyTheme() {
   const theme = renderString(palette.palette.value, templateRaw[TEMPLATE_PREFIX + installation.value?.template].default);
   navigator.clipboard.writeText(theme);
-  // message.success('Copied');
+  message.success('Theme Copied');
 }
 
 const content = computed(() => {

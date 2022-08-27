@@ -43,6 +43,7 @@
 .home {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 .slot {
   top: 64px;
