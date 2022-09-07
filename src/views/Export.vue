@@ -91,10 +91,10 @@ const installation = computed(() => {
 const PALETTE_PLACEHOLDER = "111111-222222-333333-444444-555555-666666-777777-888888-999999";
 
 const beforeMd = computed(() => {
-  return (installation.value?.before_md as string).replaceAll(PALETTE_PLACEHOLDER, palette.palette.value);
+  return (installation.value?.before_md as string ?? '').replaceAll(PALETTE_PLACEHOLDER, palette.palette.value);
 });
 const afterMd = computed(() => {
-  return (installation.value?.after_md as string).replaceAll(PALETTE_PLACEHOLDER, palette.palette.value);
+  return (installation.value?.after_md as string ?? '').replaceAll(PALETTE_PLACEHOLDER, palette.palette.value);
 });
 
 function downloadTemplate() {
